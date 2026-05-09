@@ -1,8 +1,9 @@
 import { AdminBreadcrumbs } from "@/components/admin-breadcrumbs";
+import { EventNotifManager } from "@/features/event-notif/components/event-notif-manager";
 
 export default function NotificationNewsPage() {
   return (
-    <div className="admin-page-stack">
+    <div className="event-notif-page w-full space-y-3">
       <AdminBreadcrumbs
         items={[
           { label: "داشبورد", href: "/dashboard" },
@@ -10,8 +11,7 @@ export default function NotificationNewsPage() {
           { label: "اعلان‌ها" },
         ]}
       />
-      <h2 className="text-lg font-semibold">مدیریت اعلان‌ها</h2>
-      <p className="text-sm text-muted-foreground">این صفحه برای مدیریت خبرها و اعلان‌های رویدادها آماده است.</p>
+      <EventNotifManager />
     </div>
   );
 }

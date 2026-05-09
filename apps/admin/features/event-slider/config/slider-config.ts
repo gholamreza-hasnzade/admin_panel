@@ -5,8 +5,8 @@ export const eventSliderConfig = {
     add: "/api/Slider/Add",
     edit: "/api/Slider/Edit",
     remove: "/api/Slider/Delete",
-    viewTypes: "/api/Slider/GetViewTypes",
-    userTypes: "/api/Slider/GetUserTypes",
+    viewTypes: "/api/BaseData/GetViewTypes",
+    userTypes: "/api/BaseData/GetUserTypes",
   },
   ui: {
     defaultPageSize: 10,
