@@ -1,0 +1,265 @@
+@import "tailwindcss";
+@import "react-multi-date-picker/styles/layouts/prime.css";
+@import "../../../packages/ui/src/assets/fonts/iransans/style.css";
+
+@source "../../../packages/ui/src/**/*.{ts,tsx}";
+
+@theme inline {
+  --font-sans:
+    IRANSans, ui-sans-serif,
+    system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+
+  --background: oklch(0.985 0.003 250);
+  --foreground: oklch(0.22 0.015 260);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.015 260);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.015 260);
+
+  --primary: oklch(0.62 0.18 255);
+  --primary-foreground: oklch(0.99 0.003 255);
+
+  --secondary: oklch(0.96 0.006 255);
+  --secondary-foreground: oklch(0.3 0.015 260);
+
+  --muted: oklch(0.97 0.005 255);
+  --muted-foreground: oklch(0.5 0.015 260);
+
+  --accent: oklch(0.95 0.01 255);
+  --accent-foreground: oklch(0.28 0.015 260);
+
+  --destructive: oklch(0.62 0.23 28);
+  --destructive-foreground: oklch(0.98 0.005 28);
+
+  --border: oklch(0.9 0.006 255);
+  --input: oklch(0.9 0.006 255);
+  --ring: oklch(0.64 0.16 255);
+
+  --radius: 0.65rem;
+
+  /* Tailwind v4 token aliases (required for bg-background, text-foreground, etc.) */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  direction: rtl;
+}
+#__next {
+  min-height: 100vh;
+}
+
+/* پوستهٔ پنل: فقط ناحیهٔ محتوا اسکرول می‌شود؛ هدر و فوتر ثابت می‌مانند. */
+.admin-shell {
+  --admin-sidebar-w: 15.75rem;
+  --admin-sidebar-w-collapsed: 5.25rem;
+  display: grid;
+  height: 100dvh;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--background) 94%, var(--muted) 6%);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 1fr;
+}
+
+.admin-shell[data-sidebar="minimal"] {
+  --admin-sidebar-w: var(--admin-sidebar-w-collapsed);
+}
+
+@media (min-width: 1024px) {
+  .admin-shell {
+    grid-template-columns: var(--admin-sidebar-w) minmax(0, 1fr);
+  }
+}
+
+.admin-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: color-mix(in oklab, var(--card) 90%, var(--primary) 10%);
+  border-inline-end: 1px solid var(--border);
+  transition:
+    transform 0.22s ease,
+    width 0.22s ease,
+    box-shadow 0.22s ease;
+  z-index: 50;
+}
+
+@media (min-width: 1024px) {
+  .admin-sidebar {
+    width: var(--admin-sidebar-w);
+    grid-row: 1 / -1;
+  }
+
+  .admin-sidebar--collapsed {
+    width: var(--admin-sidebar-w-collapsed);
+  }
+}
+
+@media (max-width: 1023px) {
+  .admin-sidebar {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: min(18rem, 88vw);
+    transform: translateX(100%);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--border) 70%, transparent);
+  }
+
+  .admin-sidebar--open {
+    transform: translateX(0);
+    box-shadow:
+      0 12px 40px oklch(0.2 0.02 260 / 0.18),
+      0 0 0 1px color-mix(in oklab, var(--border) 70%, transparent);
+  }
+}
+
+.admin-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  background: oklch(0.15 0.02 260 / 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.admin-sidebar-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+  .admin-sidebar-backdrop {
+    display: none;
+  }
+}
+
+.admin-main {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  background: color-mix(in oklab, var(--background) 97%, var(--card) 3%);
+}
+
+@media (min-width: 1024px) {
+  .admin-main {
+    grid-column: 2;
+  }
+}
+
+.admin-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  padding: 0.65rem 0.85rem;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.admin-content-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1rem 1.25rem;
+}
+
+.admin-footer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  border-top: 1px solid var(--border);
+  min-height: 2.75rem;
+  padding: 0.55rem 0.85rem;
+  color: var(--muted-foreground);
+  font-size: 0.72rem;
+  background: color-mix(in oklab, var(--card) 92%, transparent);
+}
+
+.admin-page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 72rem;
+}
+
+.login-page-root {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: color-mix(in oklab, var(--background) 92%, var(--muted) 8%);
+}
+
+.event-slider-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* For slider screen, disable parent content scroll. */
+.admin-content-scroll:has(.event-slider-page) {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .admin-header {
+    padding-inline: 0.65rem;
+  }
+
+  .admin-content-scroll {
+    padding-inline: 0.75rem;
+  }
+}
