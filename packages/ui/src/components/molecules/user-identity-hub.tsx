@@ -49,6 +49,7 @@ export function UserIdentityHub({
 }: UserIdentityHubProps) {
   const [open, setOpen] = React.useState(false);
   const hubRef = React.useRef<HTMLDivElement | null>(null);
+  const menuRef = React.useRef<HTMLDivElement | null>(null);
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
   const [menuStyle, setMenuStyle] = React.useState<React.CSSProperties | null>(null);
 
@@ -73,7 +74,9 @@ export function UserIdentityHub({
     const handleOutsideClick = (event: MouseEvent) => {
       const target = event.target as Node | null;
       if (!target) return;
-      if (hubRef.current && !hubRef.current.contains(target)) {
+      const isInsideTrigger = Boolean(hubRef.current?.contains(target));
+      const isInsideMenu = Boolean(menuRef.current?.contains(target));
+      if (!isInsideTrigger && !isInsideMenu) {
         setOpen(false);
       }
     };
@@ -129,6 +132,7 @@ export function UserIdentityHub({
       {open && menuStyle
         ? createPortal(
             <div
+              ref={menuRef}
               style={menuStyle}
               className={cn("rounded-xl border border-border bg-card p-2 shadow-lg", menuClassName)}
             >

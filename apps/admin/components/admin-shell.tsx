@@ -7,14 +7,6 @@ import { Bell, ChevronDown, Menu, PanelLeftClose, PanelRightClose, Settings } fr
 
 import {
   Button,
-  ConfirmDialog,
-  ConfirmDialogAction,
-  ConfirmDialogCancel,
-  ConfirmDialogContent,
-  ConfirmDialogDescription,
-  ConfirmDialogFooter,
-  ConfirmDialogHeader,
-  ConfirmDialogTitle,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -30,9 +22,10 @@ import {
   isNavLinkActive,
 } from "@/config/admin-navigation";
 import { cn } from "@/lib/utils";
-import { clearAccessToken } from "@/lib/auth-token";
 
 const SIDEBAR_COLLAPSED_KEY = "mymedu_admin_sidebar_collapsed";
+const ACCESS_TOKEN_STORAGE_KEY = "mymedu_admin_access_token";
+const MAIN_SITE_URL = process.env.NEXT_PUBLIC_SSO_PORTAL_URL ?? "https://my.medu.ir";
 
 export type AdminShellBrand = {
   name: string;
@@ -42,7 +35,6 @@ export type AdminShellBrand = {
 
 type AdminShellProps = {
   children: React.ReactNode;
-  /** برای تم‌های آینده؛ پیش‌فرض MyMedu */
   brand?: AdminShellBrand;
 };
 
@@ -205,7 +197,6 @@ export function AdminShell({
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   useLayoutEffect(() => {
@@ -266,8 +257,12 @@ export function AdminShell({
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   const onLogout = useCallback(() => {
-    clearAccessToken();
-    window.location.assign("/login");
+    try {
+      window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+    } catch {
+      /* */
+    }
+    window.location.assign(MAIN_SITE_URL);
   }, []);
 
   const effectiveCollapsed = collapsed && !isMobileViewport;
@@ -403,7 +398,7 @@ export function AdminShell({
                     id: "logout",
                     label: "خروج از حساب",
                     variant: "destructive",
-                    onClick: () => setLogoutConfirmOpen(true),
+                    onClick: onLogout,
                   },
                 ]}
               />
@@ -419,27 +414,6 @@ export function AdminShell({
             </span>
           </footer>
         </div>
-        <ConfirmDialog open={logoutConfirmOpen} onOpenChange={setLogoutConfirmOpen}>
-          <ConfirmDialogContent dir="rtl" className="max-w-sm">
-            <ConfirmDialogHeader>
-              <ConfirmDialogTitle>خروج از حساب</ConfirmDialogTitle>
-              <ConfirmDialogDescription>
-                آیا مطمئن هستید که می‌خواهید از حساب خارج شوید؟
-              </ConfirmDialogDescription>
-            </ConfirmDialogHeader>
-            <ConfirmDialogFooter>
-              <ConfirmDialogCancel>انصراف</ConfirmDialogCancel>
-              <ConfirmDialogAction
-                onClick={() => {
-                  setLogoutConfirmOpen(false);
-                  onLogout();
-                }}
-              >
-                خروج
-              </ConfirmDialogAction>
-            </ConfirmDialogFooter>
-          </ConfirmDialogContent>
-        </ConfirmDialog>
       </div>
     </TooltipProvider>
   );

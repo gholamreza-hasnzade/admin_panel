@@ -25,6 +25,8 @@ export function syncSessionFromStorage(): void {
   if (typeof window === "undefined") return;
   if (getAccessToken()) {
     setSessionIndicatorCookie();
+  } else {
+    clearSessionIndicatorCookie();
   }
 }
 
@@ -49,8 +51,8 @@ export function setAccessToken(token: string): void {
 export function clearAccessToken(): void {
   try {
     window.localStorage.removeItem(STORAGE_KEY);
-    clearSessionIndicatorCookie();
   } catch {
     /* */
   }
+  clearSessionIndicatorCookie();
 }

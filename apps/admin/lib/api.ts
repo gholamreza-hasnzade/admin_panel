@@ -13,7 +13,7 @@ export const api = createApiClient({
   onUnauthorized: () => {
     clearAccessToken();
     if (typeof window !== "undefined") {
-      window.location.assign("/login");
+      window.location.assign("/");
     }
   },
 });

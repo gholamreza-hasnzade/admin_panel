@@ -23,7 +23,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
     icon: Building2,
     children: [
       { id: "event-slider", label: "اسلایدر", href: "/event/slider", icon: Network },
-      { id: "event-news", label: "اخبار", href: "/event/news", icon: Network },
+      { id: "event-news", label: "اعلان ها", href: "/event/notif", icon: Network },
     ],
   },
 ];
