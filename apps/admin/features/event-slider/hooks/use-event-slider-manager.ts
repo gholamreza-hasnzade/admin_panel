@@ -2,17 +2,13 @@ import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast, toBackendDateTimeString } from "@repo/ui";
 
+import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
+
 import { eventSliderConfig } from "../config/slider-config";
 import { EMPTY_SLIDER_FORM, sliderFormSchema } from "../model";
-import { deleteSlider, fetchSelectOptions, fetchSliderById, saveSlider } from "../services/slider-service";
+import { deleteSlider, fetchSliderById, saveSlider } from "../services/slider-service";
 import type { SliderFormErrors, SliderFormValues, SliderItem } from "../types";
-import {
-  mapEntityToSliderItem,
-  mapRowToForm,
-  normalizeOptions,
-  toOptionalNumber,
-  toOptionalString,
-} from "../utils";
+import { mapEntityToSliderItem, mapRowToForm, toOptionalNumber, toOptionalString } from "../utils";
 
 export function useEventSliderManager() {
   const queryClient = useQueryClient();

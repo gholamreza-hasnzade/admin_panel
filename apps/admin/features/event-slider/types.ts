@@ -1,3 +1,5 @@
+export type { SelectOption } from "@/lib/select-options";
+
 export type SliderItem = {
   id: number;
   title: string | null;
@@ -15,12 +17,6 @@ export type SliderItem = {
   userType: number | null;
   href: string | null;
   orderIndex: number | null;
-};
-
-export type SelectOption = {
-  value: string;
-  label: string;
-  disabled?: boolean;
 };
 
 export type SliderFormValues = {

@@ -15,11 +15,3 @@ export async function saveSlider(payload: Record<string, unknown>, isEditMode: b
 export async function deleteSlider(id: number) {
   await api.get(eventSliderConfig.api.remove, { params: { id } });
 }
-
-export async function fetchSelectOptions(args: {
-  url: string;
-  params?: Record<string, string | number | boolean | null | undefined>;
-}) {
-  const response = await api.get(args.url, { params: args.params });
-  return response.data as unknown;
-}

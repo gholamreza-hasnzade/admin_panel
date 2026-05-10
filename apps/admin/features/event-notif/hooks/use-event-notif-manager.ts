@@ -2,19 +2,15 @@ import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast, toBackendDateTimeString } from "@repo/ui";
 
+import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
+
 import { eventNotifConfig } from "../config/event-notif-config";
 import { EMPTY_EVENT_NOTIF_FORM, eventNotifFormSchema } from "../model";
-import {
-  deleteEventNotif,
-  fetchEventNotifById,
-  fetchSelectOptions,
-  saveEventNotif,
-} from "../services/event-notif-service";
+import { deleteEventNotif, fetchEventNotifById, saveEventNotif } from "../services/event-notif-service";
 import type { EventNotifFormErrors, EventNotifFormValues, EventNotifItem } from "../types";
 import {
   mapEntityToEventNotifItem,
   mapRowToEventNotifForm,
-  normalizeOptions,
   toOptionalNumber,
   toOptionalString,
 } from "../utils";

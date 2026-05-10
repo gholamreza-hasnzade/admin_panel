@@ -1,3 +1,5 @@
+export type { SelectOption } from "@/lib/select-options";
+
 export type EventNotifItem = {
   id: number;
   title: string | null;
@@ -15,12 +17,6 @@ export type EventNotifItem = {
   userTypeTitle: string | null;
   deleted: boolean | null;
   orderIndex: number | null;
-};
-
-export type SelectOption = {
-  value: string;
-  label: string;
-  disabled?: boolean;
 };
 
 export type EventNotifFormValues = {

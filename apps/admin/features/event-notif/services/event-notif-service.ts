@@ -15,11 +15,3 @@ export async function saveEventNotif(payload: Record<string, unknown>, isEditMod
   const url = isEditMode ? eventNotifConfig.api.edit : eventNotifConfig.api.add;
   await api.post(url, payload);
 }
-
-export async function fetchSelectOptions(args: {
-  url: string;
-  params?: Record<string, string | number | boolean | null | undefined>;
-}) {
-  const response = await api.get(args.url, { params: args.params });
-  return response.data as unknown;
-}

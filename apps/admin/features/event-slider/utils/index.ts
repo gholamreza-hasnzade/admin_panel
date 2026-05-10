@@ -1,3 +1,3 @@
 export { mapEntityToSliderItem, mapRowToForm } from "./mappers";
-export { normalizeOptions } from "./options";
+export { normalizeOptions } from "@/lib/select-options";
 export { toOptionalNumber, toOptionalString } from "./primitive";
