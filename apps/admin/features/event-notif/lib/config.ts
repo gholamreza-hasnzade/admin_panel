@@ -5,8 +5,6 @@ export const eventNotifConfig = {
     add: "/api/Notification/Add",
     edit: "/api/Notification/Edit",
     remove: "/api/Notification/Delete",
-    viewTypes: "/api/BaseData/GetViewTypes",
-    userTypes: "/api/BaseData/GetUserTypes",
   },
   ui: {
     defaultPageSize: 10,

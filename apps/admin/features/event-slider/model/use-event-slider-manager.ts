@@ -2,11 +2,12 @@ import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast, toBackendDateTimeString } from "@repo/ui";
 
+import { baseDataApiRoutes } from "@/lib/base-data-api";
 import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
+import { toOptionalNumber, toOptionalString } from "@/lib/utils/form-primitive";
 
 import { eventSliderConfig } from "../lib/config";
 import { mapEntityToSliderItem, mapRowToForm } from "../lib/mappers";
-import { toOptionalNumber, toOptionalString } from "../lib/primitive";
 import { deleteSlider, fetchSliderById, saveSlider } from "../api/slider";
 import { EMPTY_SLIDER_FORM, type SliderFormValues } from "./form-schema";
 import type { SliderItem } from "./types";
@@ -143,8 +144,8 @@ export function useEventSliderManager() {
     isDeleting: deleteMutation.isPending,
     isFetchingEditItem: fetchEditItemMutation.isPending,
     isEditMode: Boolean(editingRow),
-    viewTypesUrl: eventSliderConfig.api.viewTypes,
-    userTypesUrl: eventSliderConfig.api.userTypes,
+    viewTypesUrl: baseDataApiRoutes.viewTypes,
+    userTypesUrl: baseDataApiRoutes.userTypes,
     fetchSelectOptions,
     normalizeOptions,
     openAddModal,

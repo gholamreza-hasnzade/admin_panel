@@ -2,14 +2,15 @@ import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast, toBackendDateTimeString } from "@repo/ui";
 
+import { baseDataApiRoutes } from "@/lib/base-data-api";
 import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
+import { toOptionalNumber, toOptionalString } from "@/lib/utils/form-primitive";
 
 import { eventNotifConfig } from "../lib/config";
 import {
   mapEntityToEventNotifItem,
   mapRowToEventNotifForm,
 } from "../lib/mappers";
-import { toOptionalNumber, toOptionalString } from "../lib/primitive";
 import { deleteEventNotif, fetchEventNotifById, saveEventNotif } from "../api/notifications";
 import { EMPTY_EVENT_NOTIF_FORM, type EventNotifFormValues } from "./form-schema";
 import type { EventNotifItem } from "./types";
@@ -148,8 +149,8 @@ export function useEventNotifManager() {
     editorDefaults,
     editorSession,
     isSaving: saveMutation.isPending,
-    viewTypesUrl: eventNotifConfig.api.viewTypes,
-    userTypesUrl: eventNotifConfig.api.userTypes,
+    viewTypesUrl: baseDataApiRoutes.viewTypes,
+    userTypesUrl: baseDataApiRoutes.userTypes,
     fetchSelectOptions,
     normalizeOptions,
     isDeleteOpen,
