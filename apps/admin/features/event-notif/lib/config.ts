@@ -1,10 +1,10 @@
 export const eventNotifConfig = {
   api: {
-    grid: "/api/Notification/GetAll",
-    getById: "/api/Notification/GetById",
-    add: "/api/Notification/Add",
-    edit: "/api/Notification/Edit",
-    remove: "/api/Notification/Delete",
+    grid: "Notification/GetAll",
+    getById: "Notification/GetById",
+    add: "Notification/Add",
+    edit: "Notification/Edit",
+    remove: "Notification/Delete",
   },
   ui: {
     defaultPageSize: 10,

@@ -1,4 +1,5 @@
-export const baseDataApiRoutes = {
-  viewTypes: "/api/BaseData/GetViewTypes",
-  userTypes: "/api/BaseData/GetUserTypes",
+export const baseDataApiRoutes = { 
+    viewTypes: "BaseData/GetViewTypes", 
+    userTypes: "BaseData/GetUserTypes", 
+    login: "Security/Login", 
 } as const;

@@ -5,7 +5,6 @@ import { toast, toBackendDateTimeString } from "@repo/ui";
 import { baseDataApiRoutes } from "@/lib/base-data-api";
 import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
 import { toOptionalNumber, toOptionalString } from "@/lib/utils/form-primitive";
-
 import { eventNotifConfig } from "../lib/config";
 import {
   mapEntityToEventNotifItem,
