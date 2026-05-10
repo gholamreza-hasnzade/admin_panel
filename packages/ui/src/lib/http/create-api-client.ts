@@ -1,4 +1,5 @@
 import axios, {
+  type AxiosError,
   type AxiosInstance,
   type AxiosResponse,
   isAxiosError,
@@ -12,13 +13,18 @@ function trimTrailingSlash(url: string): string {
 
 type RequestConfigWithAuthFlag = { _skipAuthRefresh?: boolean };
 
-function unwrapEnvelope(
+async function unwrapEnvelope(
   envelope: ApiEnvelopeConfig,
   response: AxiosResponse,
-): AxiosResponse {
+  handlers: {
+    onUnauthorized?: (error?: AxiosError) => void | Promise<void>;
+  },
+): Promise<AxiosResponse> {
   const resultCodeField = envelope.resultCodeField ?? "resultCode";
   const dataField = envelope.dataField ?? "data";
   const successResultCode = envelope.successResultCode ?? 200;
+  const logoutResultCodes =
+    envelope.logoutResultCodes ?? [4];
   const payload = response.data;
 
   if (payload == null || typeof payload !== "object") {
@@ -46,15 +52,26 @@ function unwrapEnvelope(
       ? rawMsg
       : `خطای سرور (${String(rc)})`;
 
+  if (logoutResultCodes.includes(rc) && handlers.onUnauthorized) {
+    try {
+      await handlers.onUnauthorized();
+    } catch {
+      /* consumer decides */
+    }
+  }
+
   throw new ApiRequestError(message, {
     status: response.status,
     body: payload,
+    resultCode: rc,
   });
 }
 
 /**
  * Shared axios instance with request/response interceptors for browser (and SSR) apps.
  * Pass `baseURL` from env, e.g. `process.env.NEXT_PUBLIC_APP_API_BASE_URL` in Next.js.
+ *
+ * When `envelope` is set: failures (including auth expiry as `resultCode` 4) often arrive with **HTTP 200**; they are turned into rejected promises after optional `onUnauthorized`.
  */
 export function createApiClient(config: ApiClientConfig): AxiosInstance {
   const {
@@ -97,9 +114,9 @@ export function createApiClient(config: ApiClientConfig): AxiosInstance {
   );
 
   instance.interceptors.response.use(
-    (response) => {
+    async (response) => {
       if (envelope) {
-        return unwrapEnvelope(envelope, response);
+        return unwrapEnvelope(envelope, response, { onUnauthorized });
       }
       return response;
     },

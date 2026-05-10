@@ -5,6 +5,7 @@ export { persianDateTimeStringToGregorianIso } from "./lib/persian-datetime-util
 export { toBackendDateTimeString, toBackendDateTimeTimestamp } from "./lib/date-time";
 
 export {
+  API_BUSINESS_RESULT_CODE,
   ApiRequestError,
   createApiClient,
   createGetByPartsQueryFn,

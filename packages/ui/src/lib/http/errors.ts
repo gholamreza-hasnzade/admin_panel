@@ -4,6 +4,8 @@ export class ApiRequestError extends Error {
   readonly status: number | undefined;
   readonly body: unknown;
   readonly code: string | undefined;
+  /** Present when the failure came from a JSON envelope (`resultCode` / `data`). */
+  readonly resultCode: number | undefined;
   readonly isApiRequestError = true as const;
 
   constructor(
@@ -13,6 +15,7 @@ export class ApiRequestError extends Error {
       body?: unknown;
       code?: string;
       cause?: unknown;
+      resultCode?: number;
     } = {},
   ) {
     super(message, { cause: options.cause });
@@ -20,6 +23,7 @@ export class ApiRequestError extends Error {
     this.status = options.status;
     this.body = options.body;
     this.code = options.code;
+    this.resultCode = options.resultCode;
   }
 }
 
