@@ -1,5 +1,4 @@
 import axios, {
-  type AxiosError,
   type AxiosInstance,
   type AxiosResponse,
   isAxiosError,

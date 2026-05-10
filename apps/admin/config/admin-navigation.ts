@@ -1,6 +1,5 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  Boxes,
   Building2,
   LayoutDashboard,
   Network,
