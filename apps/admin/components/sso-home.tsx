@@ -14,6 +14,7 @@ import {
 
 import { api } from "@/lib/api";
 import { getAccessToken, setAccessToken, syncSessionFromStorage } from "@/lib/auth-token";
+import { baseDataApiRoutes } from "@/lib/base-data-api";
 
 const MEDU_SSO_ENTRY =
   process.env.NEXT_PUBLIC_SSO_PORTAL_URL ?? "https://my.medu.ir/app/NoAmoz/TestEs";
@@ -31,7 +32,7 @@ function errorMessage(error: unknown): string {
 }
 
 async function exchangeSsoCode(code: string): Promise<string> {
-  const { data } = await api.post<string>("/api/Security/Login", undefined, {
+  const { data } = await api.post<string>(baseDataApiRoutes.login, undefined, {
     params: { code },
   });
   if (typeof data !== "string" || !data.trim()) {
