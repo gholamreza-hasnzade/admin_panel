@@ -20,6 +20,10 @@ export function EventNotifManager() {
         form={manager.form}
         errors={manager.formErrors}
         isSaving={manager.isSaving}
+        viewTypesUrl={manager.viewTypesUrl}
+        userTypesUrl={manager.userTypesUrl}
+        fetchOptions={manager.fetchSelectOptions}
+        normalizeOptions={manager.normalizeOptions}
         onFieldChange={manager.onFieldChange}
         onConfirm={manager.handleEditorConfirm}
       />

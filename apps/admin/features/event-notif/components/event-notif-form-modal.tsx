@@ -12,7 +12,7 @@ import {
   TextField,
 } from "@repo/ui";
 
-import type { EventNotifFormErrors, EventNotifFormValues } from "../types";
+import type { EventNotifFormErrors, EventNotifFormValues, SelectOption } from "../types";
 
 type EventNotifFormModalProps = {
   open: boolean;
@@ -21,6 +21,13 @@ type EventNotifFormModalProps = {
   form: EventNotifFormValues;
   errors: EventNotifFormErrors;
   isSaving: boolean;
+  viewTypesUrl: string;
+  userTypesUrl: string;
+  fetchOptions: (args: {
+    url: string;
+    params?: Record<string, string | number | boolean | null | undefined>;
+  }) => Promise<unknown>;
+  normalizeOptions: (raw: unknown) => SelectOption[];
   onFieldChange: (field: keyof EventNotifFormValues, value: string) => void;
   onConfirm: () => void;
 };
@@ -32,6 +39,10 @@ export function EventNotifFormModal({
   form,
   errors,
   isSaving,
+  viewTypesUrl,
+  userTypesUrl,
+  fetchOptions,
+  normalizeOptions,
   onFieldChange,
   onConfirm,
 }: EventNotifFormModalProps) {
@@ -89,21 +100,27 @@ export function EventNotifFormModal({
             error={errors.endDate}
           />
 
-          <TextField
-            label="سمت نمایش"
+          <SelectField
+            label="نوع نمایش"
             value={form.viewSide}
-            onChange={(e) => onFieldChange("viewSide", e.target.value)}
-            placeholder="مثلا 1"
-            inputMode="numeric"
+            optionsUrl={viewTypesUrl}
+            fetchOptions={fetchOptions}
+            normalizeOptions={normalizeOptions}
+            queryEnabled={open}
+            searchable
             error={errors.viewSide}
+            onValueChange={(v) => onFieldChange("viewSide", typeof v === "string" ? v : "")}
           />
-          <TextField
+          <SelectField
             label="نوع کاربر"
             value={form.userType}
-            onChange={(e) => onFieldChange("userType", e.target.value)}
-            placeholder="مثلا 0"
-            inputMode="numeric"
+            optionsUrl={userTypesUrl}
+            fetchOptions={fetchOptions}
+            normalizeOptions={normalizeOptions}
+            queryEnabled={open}
+            searchable
             error={errors.userType}
+            onValueChange={(v) => onFieldChange("userType", typeof v === "string" ? v : "")}
           />
           <SelectField
             label="وضعیت نمایش"

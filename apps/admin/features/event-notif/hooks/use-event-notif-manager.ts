@@ -7,12 +7,14 @@ import { EMPTY_EVENT_NOTIF_FORM, eventNotifFormSchema } from "../model";
 import {
   deleteEventNotif,
   fetchEventNotifById,
+  fetchSelectOptions,
   saveEventNotif,
 } from "../services/event-notif-service";
 import type { EventNotifFormErrors, EventNotifFormValues, EventNotifItem } from "../types";
 import {
   mapEntityToEventNotifItem,
   mapRowToEventNotifForm,
+  normalizeOptions,
   toOptionalNumber,
   toOptionalString,
 } from "../utils";
@@ -167,6 +169,10 @@ export function useEventNotifManager() {
     form,
     formErrors,
     isSaving: saveMutation.isPending,
+    viewTypesUrl: eventNotifConfig.api.viewTypes,
+    userTypesUrl: eventNotifConfig.api.userTypes,
+    fetchSelectOptions,
+    normalizeOptions,
     isDeleteOpen,
     setIsDeleteOpen,
     deletingRow,
