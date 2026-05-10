@@ -1,5 +1,4 @@
-import type { EventNotifItem } from "../types";
-import type { EventNotifFormValues } from "../types";
+import type { EventNotifFormValues, EventNotifItem } from "../model/types";
 
 function extractEntityPayload(raw: unknown) {
   if (!raw || typeof raw !== "object") return null;

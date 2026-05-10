@@ -2,7 +2,7 @@
 
 import { Modal, ModalActions, ModalContent, ModalDescription, ModalHeader, ModalTitle } from "@repo/ui";
 
-import type { EventNotifItem } from "../types";
+import type { EventNotifItem } from "../model/types";
 
 type EventNotifDeleteModalProps = {
   open: boolean;

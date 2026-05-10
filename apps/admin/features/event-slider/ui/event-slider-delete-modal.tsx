@@ -2,7 +2,7 @@
 
 import { Modal, ModalActions, ModalContent, ModalDescription, ModalHeader, ModalTitle } from "@repo/ui";
 
-import type { SliderItem } from "../types";
+import type { SliderItem } from "../model/types";
 
 type EventSliderDeleteModalProps = {
   open: boolean;

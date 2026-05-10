@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 
-import { eventNotifConfig } from "../config/event-notif-config";
+import { eventNotifConfig } from "../lib/config";
 
 export async function fetchEventNotifById(id: number) {
   const response = await api.get(eventNotifConfig.api.getById, { params: { id } });

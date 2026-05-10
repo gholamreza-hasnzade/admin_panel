@@ -1,5 +1,7 @@
 export type { SelectOption } from "@/lib/select-options";
 
+export type { SliderFormValues } from "./form-schema";
+
 export type SliderItem = {
   id: number;
   title: string | null;
@@ -18,19 +20,3 @@ export type SliderItem = {
   href: string | null;
   orderIndex: number | null;
 };
-
-export type SliderFormValues = {
-  title: string;
-  subTitle: string;
-  imageUrl: string;
-  href: string;
-  startDate: string;
-  endDate: string;
-  width: string;
-  height: string;
-  viewType: string;
-  userType: string;
-  orderIndex: string;
-};
-
-export type SliderFormErrors = Partial<Record<keyof SliderFormValues, string>>;

@@ -1,5 +1,7 @@
 export type { SelectOption } from "@/lib/select-options";
 
+export type { EventNotifFormValues } from "./form-schema";
+
 export type EventNotifItem = {
   id: number;
   title: string | null;
@@ -18,18 +20,3 @@ export type EventNotifItem = {
   deleted: boolean | null;
   orderIndex: number | null;
 };
-
-export type EventNotifFormValues = {
-  title: string;
-  shortText: string;
-  longText: string;
-  startDate: string;
-  endDate: string;
-  creator: string;
-  visible: string;
-  viewSide: string;
-  userType: string;
-  orderIndex: string;
-};
-
-export type EventNotifFormErrors = Partial<Record<keyof EventNotifFormValues, string>>;

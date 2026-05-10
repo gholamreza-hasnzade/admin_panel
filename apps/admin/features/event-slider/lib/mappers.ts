@@ -1,4 +1,4 @@
-import type { SliderFormValues, SliderItem } from "../types";
+import type { SliderFormValues, SliderItem } from "../model/types";
 
 export function mapRowToForm(row: SliderItem): SliderFormValues {
   return {

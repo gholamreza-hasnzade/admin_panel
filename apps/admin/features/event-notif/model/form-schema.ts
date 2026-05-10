@@ -1,21 +1,6 @@
 import { z } from "zod";
 import { toBackendDateTimeTimestamp } from "@repo/ui";
 
-import type { EventNotifFormValues } from "./types";
-
-export const EMPTY_EVENT_NOTIF_FORM: EventNotifFormValues = {
-  title: "",
-  shortText: "",
-  longText: "",
-  startDate: "",
-  endDate: "",
-  creator: "",
-  visible: "true",
-  viewSide: "",
-  userType: "",
-  orderIndex: "",
-};
-
 export const eventNotifFormSchema = z
   .object({
     title: z.string().trim().min(1, "عنوان الزامی است."),
@@ -71,3 +56,18 @@ export const eventNotifFormSchema = z
       });
     }
   });
+
+export type EventNotifFormValues = z.infer<typeof eventNotifFormSchema>;
+
+export const EMPTY_EVENT_NOTIF_FORM: EventNotifFormValues = {
+  title: "",
+  shortText: "",
+  longText: "",
+  startDate: "",
+  endDate: "",
+  creator: "",
+  visible: "true",
+  viewSide: "",
+  userType: "",
+  orderIndex: "",
+};

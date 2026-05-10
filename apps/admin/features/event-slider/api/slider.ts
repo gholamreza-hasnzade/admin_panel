@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 
-import { eventSliderConfig } from "../config/slider-config";
+import { eventSliderConfig } from "../lib/config";
 
 export async function fetchSliderById(id: number) {
   const response = await api.get(eventSliderConfig.api.getById, { params: { id } });

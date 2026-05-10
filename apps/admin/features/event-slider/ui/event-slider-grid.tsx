@@ -5,8 +5,8 @@ import { DataGrid, type DataGridColumnDef } from "@repo/ui";
 
 import { api } from "@/lib/api";
 
-import { eventSliderConfig } from "../config/slider-config";
-import type { SliderItem } from "../types";
+import { eventSliderConfig } from "../lib/config";
+import type { SliderItem } from "../model/types";
 
 function showText(value: string | number | null | undefined): ReactNode {
   if (value === null || value === undefined || value === "") return "-";

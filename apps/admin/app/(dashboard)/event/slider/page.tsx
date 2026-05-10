@@ -1,18 +1,5 @@
-import { AdminBreadcrumbs } from "@/components/admin-breadcrumbs";
-import { EventSliderManager } from "@/features/event-slider/components/event-slider-manager";
+import { EventSliderPage } from "@/features/event-slider";
 
-
-export default function EventSliderPage() {
-  return (
-    <div className="event-slider-page w-full space-y-3">
-      <AdminBreadcrumbs
-        items={[
-          { label: "داشبورد", href: "/dashboard" },
-          { label: "رویدادها" },
-          { label: "اسلایدر" },
-        ]}
-      />
-      <EventSliderManager />
-    </div>
-  );
+export default function Page() {
+  return <EventSliderPage />;
 }

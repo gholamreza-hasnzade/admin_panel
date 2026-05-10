@@ -5,8 +5,8 @@ import { DataGrid, type DataGridColumnDef } from "@repo/ui";
 
 import { api } from "@/lib/api";
 
-import { eventNotifConfig } from "../config/event-notif-config";
-import type { EventNotifItem } from "../types";
+import { eventNotifConfig } from "../lib/config";
+import type { EventNotifItem } from "../model/types";
 
 function showText(value: string | number | null | undefined): ReactNode {
   if (value === null || value === undefined || value === "") return "-";

@@ -4,16 +4,15 @@ import { toast, toBackendDateTimeString } from "@repo/ui";
 
 import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
 
-import { eventNotifConfig } from "../config/event-notif-config";
-import { EMPTY_EVENT_NOTIF_FORM, eventNotifFormSchema } from "../model";
-import { deleteEventNotif, fetchEventNotifById, saveEventNotif } from "../services/event-notif-service";
-import type { EventNotifFormErrors, EventNotifFormValues, EventNotifItem } from "../types";
+import { eventNotifConfig } from "../lib/config";
 import {
   mapEntityToEventNotifItem,
   mapRowToEventNotifForm,
-  toOptionalNumber,
-  toOptionalString,
-} from "../utils";
+} from "../lib/mappers";
+import { toOptionalNumber, toOptionalString } from "../lib/primitive";
+import { deleteEventNotif, fetchEventNotifById, saveEventNotif } from "../api/notifications";
+import { EMPTY_EVENT_NOTIF_FORM, type EventNotifFormValues } from "./form-schema";
+import type { EventNotifItem } from "./types";
 
 export function useEventNotifManager() {
   const queryClient = useQueryClient();
@@ -21,8 +20,8 @@ export function useEventNotifManager() {
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [editingRow, setEditingRow] = React.useState<EventNotifItem | null>(null);
   const [deletingRow, setDeletingRow] = React.useState<EventNotifItem | null>(null);
-  const [form, setForm] = React.useState<EventNotifFormValues>(EMPTY_EVENT_NOTIF_FORM);
-  const [formErrors, setFormErrors] = React.useState<EventNotifFormErrors>({});
+  const [editorDefaults, setEditorDefaults] = React.useState<EventNotifFormValues>(EMPTY_EVENT_NOTIF_FORM);
+  const [editorSession, setEditorSession] = React.useState(0);
 
   const refreshGrid = React.useCallback(async () => {
     await queryClient.refetchQueries({
@@ -47,8 +46,8 @@ export function useEventNotifManager() {
 
   const openAddModal = React.useCallback(() => {
     setEditingRow(null);
-    setForm(EMPTY_EVENT_NOTIF_FORM);
-    setFormErrors({});
+    setEditorDefaults(EMPTY_EVENT_NOTIF_FORM);
+    setEditorSession((s) => s + 1);
     setIsEditorOpen(true);
   }, []);
 
@@ -58,13 +57,13 @@ export function useEventNotifManager() {
         const response = await fetchByIdMutation.mutateAsync(row.id);
         const freshItem = mapEntityToEventNotifItem(response) ?? row;
         setEditingRow(freshItem);
-        setForm(mapRowToEventNotifForm(freshItem));
-        setFormErrors({});
+        setEditorDefaults(mapRowToEventNotifForm(freshItem));
+        setEditorSession((s) => s + 1);
         setIsEditorOpen(true);
       } catch {
         setEditingRow(row);
-        setForm(mapRowToEventNotifForm(row));
-        setFormErrors({});
+        setEditorDefaults(mapRowToEventNotifForm(row));
+        setEditorSession((s) => s + 1);
         setIsEditorOpen(true);
         toast.error("دریافت اطلاعات اعلان انجام نشد؛ داده فعلی جدول نمایش داده شد.");
       }
@@ -101,69 +100,53 @@ export function useEventNotifManager() {
     }
   }, [deleteMutation, deletingRow, refreshGrid]);
 
-  const onFieldChange = React.useCallback((field: keyof EventNotifFormValues, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setFormErrors((prev) => ({ ...prev, [field]: undefined }));
-  }, []);
+  const handleEditorSubmit = React.useCallback(
+    async (form: EventNotifFormValues) => {
+      try {
+        const startDate = toBackendDateTimeString(form.startDate);
+        const endDate = toBackendDateTimeString(form.endDate);
+        if (!startDate || !endDate) {
+          toast.error("فرمت تاریخ‌ها نامعتبر است.");
+          return;
+        }
 
-  const handleEditorConfirm = React.useCallback(async () => {
-    try {
-      const validation = eventNotifFormSchema.safeParse(form);
-      if (!validation.success) {
-        const nextErrors: EventNotifFormErrors = {};
-        const fieldErrors = validation.error.flatten().fieldErrors;
-        (Object.keys(fieldErrors) as (keyof EventNotifFormValues)[]).forEach((key) => {
-          const firstError = fieldErrors[key]?.[0];
-          if (firstError) nextErrors[key] = firstError;
+        const payload = {
+          ...(editingRow ? { id: editingRow.id } : {}),
+          title: toOptionalString(form.title),
+          shortText: toOptionalString(form.shortText),
+          longText: toOptionalString(form.longText),
+          startDate,
+          endDate,
+          creator: toOptionalString(form.creator ?? ""),
+          visible: form.visible.trim().toLowerCase() === "true",
+          viewSide: toOptionalNumber(form.viewSide),
+          userType: toOptionalNumber(form.userType),
+          orderIndex: toOptionalNumber(form.orderIndex),
+        };
+
+        await saveMutation.mutateAsync({
+          payload,
+          isEditMode: Boolean(editingRow),
         });
-        setFormErrors(nextErrors);
-        toast.error("لطفاً خطاهای فرم را برطرف کنید.");
-        return;
+        toast.success(editingRow ? "اعلان با موفقیت ویرایش شد." : "اعلان با موفقیت اضافه شد.");
+        setIsEditorOpen(false);
+        setEditingRow(null);
+        setEditorDefaults(EMPTY_EVENT_NOTIF_FORM);
+        void refreshGrid();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "ثبت اطلاعات انجام نشد. لطفاً دوباره تلاش کنید.";
+        toast.error(message);
       }
-
-      const startDate = toBackendDateTimeString(validation.data.startDate);
-      const endDate = toBackendDateTimeString(validation.data.endDate);
-      if (!startDate || !endDate) {
-        toast.error("فرمت تاریخ‌ها نامعتبر است.");
-        return;
-      }
-
-      const payload = {
-        ...(editingRow ? { id: editingRow.id } : {}),
-        title: toOptionalString(form.title),
-        shortText: toOptionalString(form.shortText),
-        longText: toOptionalString(form.longText),
-        startDate,
-        endDate,
-        creator: toOptionalString(form.creator),
-        visible: form.visible.trim().toLowerCase() === "true",
-        viewSide: toOptionalNumber(form.viewSide),
-        userType: toOptionalNumber(form.userType),
-        orderIndex: toOptionalNumber(form.orderIndex),
-      };
-
-      await saveMutation.mutateAsync({
-        payload,
-        isEditMode: Boolean(editingRow),
-      });
-      toast.success(editingRow ? "اعلان با موفقیت ویرایش شد." : "اعلان با موفقیت اضافه شد.");
-      setIsEditorOpen(false);
-      setEditingRow(null);
-      setForm(EMPTY_EVENT_NOTIF_FORM);
-      setFormErrors({});
-      void refreshGrid();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "ثبت اطلاعات انجام نشد. لطفاً دوباره تلاش کنید.";
-      toast.error(message);
-    }
-  }, [editingRow, form, refreshGrid, saveMutation]);
+    },
+    [editingRow, refreshGrid, saveMutation],
+  );
 
   return {
     isEditorOpen,
     setIsEditorOpen,
     isEditMode: Boolean(editingRow),
-    form,
-    formErrors,
+    editorDefaults,
+    editorSession,
     isSaving: saveMutation.isPending,
     viewTypesUrl: eventNotifConfig.api.viewTypes,
     userTypesUrl: eventNotifConfig.api.userTypes,
@@ -176,8 +159,7 @@ export function useEventNotifManager() {
     openAddModal,
     openEditModal,
     openDeleteModal,
-    onFieldChange,
-    handleEditorConfirm,
+    handleEditorSubmit,
     handleDeleteConfirm,
   };
 }
