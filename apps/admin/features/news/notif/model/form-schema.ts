@@ -66,7 +66,7 @@ export const EMPTY_NOTIF_FORM: NotifFormValues = {
   startDate: "",
   endDate: "",
   creator: "",
-  visible: "true",
+  visible: "",
   viewSide: "",
   userType: "",
   orderIndex: "",
