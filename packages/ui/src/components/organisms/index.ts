@@ -32,4 +32,9 @@ export { Tabs, TabsList, TabsTrigger, TabsContent, tabsTriggerVariants } from ".
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "./accordion";
 
 export { DataGrid } from "./data-grid";
-export type { DataGridProps, DataGridColumnDef, DataGridColumnMeta } from "./data-grid";
+export type {
+  DataGridProps,
+  DataGridColumnDef,
+  DataGridColumnMeta,
+  DataGridRowAction,
+} from "./data-grid";

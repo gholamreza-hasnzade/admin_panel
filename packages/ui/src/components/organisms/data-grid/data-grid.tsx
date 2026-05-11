@@ -1,10 +1,8 @@
 "use client";
 
 import * as React from "react";
-import type { AxiosInstance } from "axios";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
-  type ColumnDef,
   type ColumnFiltersState,
   type PaginationState,
   type SortingState,
@@ -13,97 +11,24 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { cn } from "../../lib/utils";
-import { TableEmptyIcon } from "../../icons";
-import { Button, type ButtonProps } from "../atoms/button";
-import { TextField } from "../atoms/text-field";
-import { Pagination } from "../molecules/pagination";
-
-type FilterType = "text" | "select" | "checkbox" | "date";
-
-type FilterOption = {
-  label: string;
-  value: string;
-};
-
-export type DataGridColumnMeta = {
-  title?: string;
-  sortable?: boolean;
-  filterType?: FilterType;
-  filterOptions?: FilterOption[];
-};
-
-export type DataGridColumnDef<TData> = ColumnDef<TData> & {
-  meta?: DataGridColumnMeta;
-};
-
-export type DataGridRowAction<TData> = {
-  label: React.ReactNode;
-  onClick: (row: TData) => void;
-  icon?: React.ReactNode;
-  variant?: ButtonProps["variant"];
-  size?: Exclude<ButtonProps["size"], "icon">;
-  className?: string;
-  disabled?: boolean | ((row: TData) => boolean);
-  visible?: (row: TData) => boolean;
-};
-
-export type DataGridProps<TData> = {
-  url: string;
-  apiClient?: AxiosInstance;
-  columns: DataGridColumnDef<TData>[];
-  className?: string;
-  tableWrapperClassName?: string;
-  dataPath?: string;
-  totalPath?: string;
-  initialPageSize?: number;
-  pageSizeOptions?: number[];
-  queryParams?: Record<string, string | number | boolean | null | undefined>;
-  mapData?: (raw: unknown) => TData[];
-  emptyMessage?: string;
-  pageParamName?: string;
-  limitParamName?: string;
-  skipParamName?: string | false;
-  sortByParamName?: string;
-  sortOrderParamName?: string;
-  filterParamPrefix?: string;
-  maxBodyHeightClassName?: string;
-  rowActions?: DataGridRowAction<TData>[];
-  actionsHeader?: React.ReactNode;
-  rowActionsMode?: "inline" | "toggle";
-  rowActionsToggleLabel?: React.ReactNode;
-  rowActionsToggleIcon?: React.ReactNode;
-  rowActionsPanelClassName?: string;
-  showGlobalSearch?: boolean;
-  globalSearchPlaceholder?: string;
-  globalSearchParamName?: string;
-  filterDebounceMs?: number;
-};
-
-function getByPath(obj: unknown, path: string) {
-  if (!obj || typeof obj !== "object") return undefined;
-  return path.split(".").reduce<unknown>((acc, key) => {
-    if (!acc || typeof acc !== "object") return undefined;
-    return (acc as Record<string, unknown>)[key];
-  }, obj);
-}
-
-function toStringSafe(value: unknown) {
-  if (value === null || value === undefined) return "";
-  return String(value);
-}
-
-const GRID_CLASS = {
-  shell: "w-full space-y-4 rounded-xl border border-border/90 bg-card p-3 shadow-sm md:p-4",
-  wrapper: "overflow-hidden rounded-lg border border-border/80 bg-background",
-  table: "w-full min-w-[920px] table-fixed border-collapse text-sm",
-  headerCell:
-    "sticky top-0 z-20 h-11 border-b border-border/90 bg-muted px-4 text-right text-xs font-semibold text-foreground md:text-sm",
-  filterCell: "sticky top-11 z-10 h-11 border-b border-border/80 bg-card px-2.5 py-1.5 text-right",
-  bodyCell: "border-b border-border/60 px-4 py-2.5 text-right align-middle text-xs text-foreground md:text-sm",
-  filterControl:
-    "h-8 w-full rounded-md border border-input bg-background px-2 text-xs text-foreground outline-none transition-colors focus:border-ring focus:ring-1 focus:ring-ring",
-} as const;
+import { cn } from "../../../lib/utils";
+import { TableEmptyIcon } from "../../../icons";
+import { Button } from "../../atoms/button";
+import { TextField } from "../../atoms/text-field";
+import { Pagination } from "../../molecules/pagination";
+import { GRID_CLASS } from "./data-grid.constants";
+import {
+  areColumnFiltersEqual,
+  buildEnhancedColumns,
+  buildRequestParams,
+  fetchGridData,
+  toGridErrorMessage,
+} from "./data-grid.helpers";
+import type {
+  DataGridColumnDef,
+  DataGridColumnMeta,
+  DataGridProps,
+} from "./data-grid.types";
 
 function DataGrid<TData>({
   url,
@@ -167,51 +92,39 @@ function DataGrid<TData>({
         const nextTextFilters = Object.entries(textFilterInputs)
           .map(([id, value]) => ({ id, value: value.trim() }))
           .filter((item) => item.value !== "");
-        return [...nonTextFilters, ...nextTextFilters];
+        const next = [...nonTextFilters, ...nextTextFilters];
+        if (areColumnFiltersEqual(prev, next)) {
+          return prev;
+        }
+        if (pagination.pageIndex !== 0) {
+          setPagination((current) => ({ ...current, pageIndex: 0 }));
+        }
+        return next;
       });
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     }, filterDebounceMs);
     return () => clearTimeout(timer);
-  }, [textFilterInputs, textFilterColumnIds, filterDebounceMs]);
+  }, [textFilterInputs, textFilterColumnIds, filterDebounceMs, pagination.pageIndex]);
 
   const requestParams = React.useMemo(() => {
-    const params = new URLSearchParams();
-    params.set(pageParamName, String(pagination.pageIndex + 1));
-    params.set(limitParamName, String(pagination.pageSize));
-    if (skipParamName) {
-      params.set(skipParamName, String(pagination.pageIndex * pagination.pageSize));
-    }
-
-    const sort = sorting[0];
-    if (sort) {
-      params.set(sortByParamName, sort.id);
-      params.set(sortOrderParamName, sort.desc ? "desc" : "asc");
-    }
-
-    columnFilters.forEach((filter) => {
-      const value = filter.value;
-      if (value !== "" && value !== undefined && value !== null) {
-        params.set(`${filterParamPrefix}${filter.id}`, String(value));
-      }
+    return buildRequestParams({
+      pageParamName,
+      limitParamName,
+      skipParamName,
+      pagination,
+      sorting,
+      columnFilters,
+      filterParamPrefix,
+      debouncedGlobalSearch,
+      globalSearchParamName,
+      queryParams,
+      sortByParamName,
+      sortOrderParamName,
     });
-
-    if (debouncedGlobalSearch) {
-      params.set(globalSearchParamName, debouncedGlobalSearch);
-    }
-
-    Object.entries(queryParams ?? {}).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        params.set(key, String(value));
-      }
-    });
-
-    return params;
   }, [
     pageParamName,
     limitParamName,
     skipParamName,
-    pagination.pageIndex,
-    pagination.pageSize,
+    pagination,
     sorting,
     columnFilters,
     filterParamPrefix,
@@ -222,85 +135,36 @@ function DataGrid<TData>({
     sortOrderParamName,
   ]);
 
+  const requestParamsObject = React.useMemo(
+    () => Object.fromEntries(requestParams.entries()),
+    [requestParams],
+  );
+
   const queryResult = useQuery({
     queryKey: ["data-grid", url, requestParams.toString(), dataPath, totalPath],
     placeholderData: keepPreviousData,
-    queryFn: async () => {
-      const raw: unknown = apiClient
-        ? (
-            await apiClient.get(url, {
-              params: Object.fromEntries(requestParams.entries()),
-            })
-          ).data
-        : await (async () => {
-            const parsedUrl = new URL(
-              url,
-              typeof window !== "undefined" ? window.location.origin : "http://localhost",
-            );
-            requestParams.forEach((value, key) => parsedUrl.searchParams.set(key, value));
-            const response = await fetch(parsedUrl.toString());
-            if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
-            return response.json() as Promise<unknown>;
-          })();
-
-      const mapped = mapData
-        ? mapData(raw)
-        : ((getByPath(raw, dataPath) ?? raw) as TData[] | undefined) ?? [];
-      if (!Array.isArray(mapped)) {
-        throw new Error("Mapped response is not an array.");
-      }
-
-      const total = Number(getByPath(raw, totalPath) ?? mapped.length);
-      return {
-        data: mapped,
-        totalRows: Number.isFinite(total) ? total : mapped.length,
-      };
-    },
+    queryFn: () =>
+      fetchGridData<TData>({
+        apiClient,
+        url,
+        requestParamsObject,
+        mapData,
+        dataPath,
+        totalPath,
+      }),
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
   });
 
-  const enhancedColumns = React.useMemo<DataGridColumnDef<TData>[]>(() => {
-    return columns.map((column) => {
-      const meta = column.meta;
-      const sortable = meta?.sortable ?? column.enableSorting ?? false;
-      const filterType = meta?.filterType;
-
-      const next: DataGridColumnDef<TData> = {
-        ...column,
-        enableSorting: sortable,
-      };
-
-      if (filterType === "date") {
-        next.filterFn = (row, columnId, value) => {
-          const rowValue = row.getValue(columnId);
-          if (!value) return true;
-          if (!rowValue) return false;
-          const normalized = String(rowValue).slice(0, 10);
-          return normalized === String(value);
-        };
-      } else if (filterType === "checkbox") {
-        next.filterFn = (row, columnId, value) => {
-          if (value === "" || value === undefined) return true;
-          return String(row.getValue(columnId)) === String(value);
-        };
-      } else if (filterType === "select") {
-        next.filterFn = (row, columnId, value) => {
-          if (!value) return true;
-          return toStringSafe(row.getValue(columnId)) === String(value);
-        };
-      }
-
-      return next;
-    });
-  }, [columns]);
+  const enhancedColumns = React.useMemo<DataGridColumnDef<TData>[]>(
+    () => buildEnhancedColumns(columns),
+    [columns],
+  );
 
   const data = queryResult.data?.data ?? [];
   const totalRows = queryResult.data?.totalRows ?? 0;
   const loading = queryResult.isPending || (queryResult.isFetching && data.length === 0);
-  const error = queryResult.isError
-    ? queryResult.error instanceof Error
-      ? queryResult.error.message
-      : "خطا در دریافت اطلاعات"
-    : null;
+  const error = queryResult.isError ? toGridErrorMessage(queryResult.error) : null;
 
   const table = useReactTable({
     data,
@@ -330,7 +194,10 @@ function DataGrid<TData>({
   const currentPage = pagination.pageIndex + 1;
   const hasActions = Boolean(rowActions?.length);
   const [openActionRowId, setOpenActionRowId] = React.useState<string | null>(null);
+  const headerGroups = table.getHeaderGroups();
+  const leafColumns = table.getAllLeafColumns();
   const visibleRows = table.getRowModel().rows;
+  const colSpan = leafColumns.length + (hasActions ? 1 : 0);
   const actionRootRef = React.useRef<HTMLDivElement | null>(null);
   const hasToggleLabel =
     rowActionsToggleLabel !== null &&
@@ -444,6 +311,12 @@ function DataGrid<TData>({
     [textFilterInputs],
   );
 
+  const clearFilters = React.useCallback(() => {
+    table.resetColumnFilters();
+    setTextFilterInputs({});
+    setGlobalSearchInput("");
+  }, [table]);
+
   return (
     <div
       className={cn(
@@ -474,7 +347,7 @@ function DataGrid<TData>({
         <div className="h-full overflow-x-auto overflow-y-auto">
           <table className={GRID_CLASS.table}>
           <thead className="bg-muted/55">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {headerGroups.map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   const canSort = header.column.getCanSort();
@@ -525,7 +398,7 @@ function DataGrid<TData>({
                 ) : null}
               </tr>
             ))}
-            {table.getHeaderGroups().map((headerGroup) => (
+            {headerGroups.map((headerGroup) => (
               <tr key={`${headerGroup.id}-filters`}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -542,7 +415,7 @@ function DataGrid<TData>({
             {loading ? (
               Array.from({ length: pagination.pageSize }).map((_, index) => (
                 <tr key={`skeleton-${index}`} className="border-b border-border/60">
-                  {table.getAllLeafColumns().map((column) => (
+                  {leafColumns.map((column) => (
                     <td key={`${column.id}-${index}`} className={GRID_CLASS.bodyCell}>
                       <div className="h-4 w-full animate-pulse rounded bg-muted" />
                     </td>
@@ -556,14 +429,14 @@ function DataGrid<TData>({
               ))
             ) : error ? (
               <tr>
-                <td colSpan={table.getAllLeafColumns().length + (hasActions ? 1 : 0)} className="px-3 py-6 text-center text-destructive">
+                <td colSpan={colSpan} className="px-3 py-6 text-center text-destructive">
                   {error}
                 </td>
               </tr>
             ) : visibleRows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={table.getAllLeafColumns().length + (hasActions ? 1 : 0)}
+                  colSpan={colSpan}
                   className="px-3 py-10 text-center"
                 >
                   <div className="mx-auto flex max-w-sm flex-col items-center justify-center gap-2 text-muted-foreground">
@@ -691,11 +564,7 @@ function DataGrid<TData>({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => {
-              table.resetColumnFilters();
-              setTextFilterInputs({});
-              setGlobalSearchInput("");
-            }}
+            onClick={clearFilters}
           >
             پاک کردن فیلترها
           </Button>
