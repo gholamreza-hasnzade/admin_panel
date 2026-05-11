@@ -1,5 +1,5 @@
-import { EventNotifPage } from "@/features/news/notif";
+import { NotifPage } from "@/features/news/notif";
 
 export default function Page() {
-  return <EventNotifPage />;
+  return <NotifPage />;
 }

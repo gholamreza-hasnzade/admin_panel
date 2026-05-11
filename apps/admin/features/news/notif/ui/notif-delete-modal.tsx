@@ -2,23 +2,23 @@
 
 import { Modal, ModalActions, ModalContent, ModalDescription, ModalHeader, ModalTitle } from "@repo/ui";
 
-import type { EventNotifItem } from "../model/types";
+import type { NotifItem } from "../model/types";
 
-type EventNotifDeleteModalProps = {
+type NotifDeleteModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  deletingRow: EventNotifItem | null;
+  deletingRow: NotifItem | null;
   isDeleting: boolean;
   onConfirm: () => void;
 };
 
-export function EventNotifDeleteModal({
+export function NotifDeleteModal({
   open,
   onOpenChange,
   deletingRow,
   isDeleting,
   onConfirm,
-}: EventNotifDeleteModalProps) {
+}: NotifDeleteModalProps) {
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent dir="rtl" className="max-w-md">

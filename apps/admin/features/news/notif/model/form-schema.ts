@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { toBackendDateTimeTimestamp } from "@repo/ui";
 
-export const eventNotifFormSchema = z
+export const notifFormSchema = z
   .object({
     title: z.string().trim().min(1, "عنوان الزامی است."),
     shortText: z.string().trim().min(1, "متن کوتاه الزامی است."),
@@ -57,9 +57,9 @@ export const eventNotifFormSchema = z
     }
   });
 
-export type EventNotifFormValues = z.infer<typeof eventNotifFormSchema>;
+export type NotifFormValues = z.infer<typeof notifFormSchema>;
 
-export const EMPTY_EVENT_NOTIF_FORM: EventNotifFormValues = {
+export const EMPTY_NOTIF_FORM: NotifFormValues = {
   title: "",
   shortText: "",
   longText: "",

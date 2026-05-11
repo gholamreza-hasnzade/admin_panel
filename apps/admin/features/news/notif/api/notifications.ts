@@ -1,17 +1,17 @@
 import { api } from "@/lib/api";
 
-import { eventNotifConfig } from "../lib/config";
+import { notifConfig } from "../lib/config";
 
-export async function fetchEventNotifById(id: number) {
-  const response = await api.get(eventNotifConfig.api.getById, { params: { id } });
+export async function fetchNotifById(id: number) {
+  const response = await api.get(notifConfig.api.getById, { params: { id } });
   return response.data as unknown;
 }
 
-export async function deleteEventNotif(id: number) {
-  await api.get(eventNotifConfig.api.remove, { params: { id } });
+export async function deleteNotif(id: number) {
+  await api.get(notifConfig.api.remove, { params: { id } });
 }
 
-export async function saveEventNotif(payload: Record<string, unknown>, isEditMode: boolean) {
-  const url = isEditMode ? eventNotifConfig.api.edit : eventNotifConfig.api.add;
+export async function saveNotif(payload: Record<string, unknown>, isEditMode: boolean) {
+  const url = isEditMode ? notifConfig.api.edit : notifConfig.api.add;
   await api.post(url, payload);
 }

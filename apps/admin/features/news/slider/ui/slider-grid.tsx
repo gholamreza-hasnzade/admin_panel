@@ -5,7 +5,7 @@ import { DataGrid, type DataGridColumnDef } from "@repo/ui";
 
 import { api } from "@/lib/api";
 
-import { eventSliderConfig } from "../lib/config";
+import { sliderConfig } from "../lib/config";
 import type { SliderItem } from "../model/types";
 
 function showText(value: string | number | null | undefined): ReactNode {
@@ -102,12 +102,12 @@ const sliderColumns: DataGridColumnDef<SliderItem>[] = [
   },
 ];
 
-type EventSliderGridProps = {
+type SliderGridProps = {
   onEditRow: (row: SliderItem) => void;
   onDeleteRow: (row: SliderItem) => void;
 };
 
-export function EventSliderGrid({ onEditRow, onDeleteRow }: EventSliderGridProps) {
+export function SliderGrid({ onEditRow, onDeleteRow }: SliderGridProps) {
   const appApiBaseUrl = process.env.NEXT_PUBLIC_APP_API_BASE_URL ?? "";
 
   if (!appApiBaseUrl) {
@@ -121,13 +121,13 @@ export function EventSliderGrid({ onEditRow, onDeleteRow }: EventSliderGridProps
   return (
     <DataGrid<SliderItem>
       apiClient={api}
-      url={eventSliderConfig.api.grid}
+      url={sliderConfig.api.grid}
       columns={sliderColumns}
-      className="event-slider-grid w-full"
-      tableWrapperClassName="event-slider-grid__table"
+      className="slider-grid w-full"
+      tableWrapperClassName="slider-grid__table"
       dataPath="results"
       totalPath="rowCount"
-      initialPageSize={eventSliderConfig.ui.defaultPageSize}
+      initialPageSize={sliderConfig.ui.defaultPageSize}
       pageSizeOptions={[10, 20, 50]}
       maxBodyHeightClassName="h-[68dvh]"
       emptyMessage="هیچ اسلایدری یافت نشد."

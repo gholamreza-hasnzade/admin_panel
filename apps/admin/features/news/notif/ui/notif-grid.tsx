@@ -5,15 +5,15 @@ import { DataGrid, type DataGridColumnDef } from "@repo/ui";
 
 import { api } from "@/lib/api";
 
-import { eventNotifConfig } from "../lib/config";
-import type { EventNotifItem } from "../model/types";
+import { notifConfig } from "../lib/config";
+import type { NotifItem } from "../model/types";
 
 function showText(value: string | number | null | undefined): ReactNode {
   if (value === null || value === undefined || value === "") return "-";
   return String(value);
 }
 
-const notifColumns: DataGridColumnDef<EventNotifItem>[] = [
+const notifColumns: DataGridColumnDef<NotifItem>[] = [
   {
     accessorKey: "id",
     header: "شناسه",
@@ -117,12 +117,12 @@ const EditIcon = () => (
   </svg>
 );
 
-type EventNotifGridProps = {
-  onEditRow: (row: EventNotifItem) => void | Promise<void>;
-  onDeleteRow: (row: EventNotifItem) => void | Promise<void>;
+type NotifGridProps = {
+  onEditRow: (row: NotifItem) => void | Promise<void>;
+  onDeleteRow: (row: NotifItem) => void | Promise<void>;
 };
 
-export function EventNotifGrid({ onEditRow, onDeleteRow }: EventNotifGridProps) {
+export function NotifGrid({ onEditRow, onDeleteRow }: NotifGridProps) {
   const appApiBaseUrl = process.env.NEXT_PUBLIC_APP_API_BASE_URL ?? "";
 
   if (!appApiBaseUrl) {
@@ -134,15 +134,15 @@ export function EventNotifGrid({ onEditRow, onDeleteRow }: EventNotifGridProps) 
   }
 
   return (
-    <DataGrid<EventNotifItem>
+    <DataGrid<NotifItem>
       apiClient={api}
-      url={eventNotifConfig.api.grid}
+      url={notifConfig.api.grid}
       columns={notifColumns}
-      className="event-notif-grid w-full"
-      tableWrapperClassName="event-notif-grid__table"
+      className="notif-grid w-full"
+      tableWrapperClassName="notif-grid__table"
       dataPath="results"
       totalPath="rowCount"
-      initialPageSize={eventNotifConfig.ui.defaultPageSize}
+      initialPageSize={notifConfig.ui.defaultPageSize}
       pageSizeOptions={[10, 20, 50]}
       maxBodyHeightClassName="h-[68dvh]"
       emptyMessage="هیچ اعلانی یافت نشد."

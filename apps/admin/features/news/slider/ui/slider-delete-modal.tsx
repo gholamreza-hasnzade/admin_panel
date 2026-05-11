@@ -4,7 +4,7 @@ import { Modal, ModalActions, ModalContent, ModalDescription, ModalHeader, Modal
 
 import type { SliderItem } from "../model/types";
 
-type EventSliderDeleteModalProps = {
+type SliderDeleteModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   deletingRow: SliderItem | null;
@@ -12,13 +12,13 @@ type EventSliderDeleteModalProps = {
   onConfirm: () => void;
 };
 
-export function EventSliderDeleteModal({
+export function SliderDeleteModal({
   open,
   onOpenChange,
   deletingRow,
   isDeleting,
   onConfirm,
-}: EventSliderDeleteModalProps) {
+}: SliderDeleteModalProps) {
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent dir="rtl" className="max-w-md">

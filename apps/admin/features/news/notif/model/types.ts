@@ -1,8 +1,8 @@
 export type { SelectOption } from "@/lib/select-options";
 
-export type { EventNotifFormValues } from "./form-schema";
+export type { NotifFormValues } from "./form-schema";
 
-export type EventNotifItem = {
+export type NotifItem = {
   id: number;
   title: string | null;
   shortText: string | null;

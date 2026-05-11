@@ -1,4 +1,4 @@
-export const eventSliderConfig = {
+export const sliderConfig = {
   api: {
     grid: "Slider/GetAll",
     getById: "Slider/GetById",

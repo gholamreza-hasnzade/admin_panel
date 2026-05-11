@@ -1,1 +1,1 @@
-export { EventNotifPage } from "./event-notif-page";
+export { NotifPage } from "./notif-page";

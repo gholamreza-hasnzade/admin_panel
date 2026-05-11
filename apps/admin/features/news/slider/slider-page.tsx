@@ -2,11 +2,11 @@
 
 import { AdminBreadcrumbs } from "@/components/admin-breadcrumbs";
 
-import { EventSliderManager } from "./ui/event-slider-manager";
+import { SliderManager } from "./ui/slider-manager";
 
-export function EventSliderPage() {
+export function SliderPage() {
   return (
-    <div className="event-slider-page w-full space-y-3">
+    <div className="slider-page w-full space-y-3">
       <AdminBreadcrumbs
         items={[
           { label: "داشبورد", href: "/dashboard" },
@@ -14,7 +14,7 @@ export function EventSliderPage() {
           { label: "اسلایدر" },
         ]}
       />
-      <EventSliderManager />
+      <SliderManager />
     </div>
   );
 }

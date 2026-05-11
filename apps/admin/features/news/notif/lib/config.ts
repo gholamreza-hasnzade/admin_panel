@@ -1,4 +1,4 @@
-export const eventNotifConfig = {
+export const notifConfig = {
   api: {
     grid: "Notification/GetAll",
     getById: "Notification/GetById",

@@ -243,14 +243,14 @@ body {
   background: color-mix(in oklab, var(--background) 92%, var(--muted) 8%);
 }
 
-.event-slider-page {
+.slider-page {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 /* For slider screen, disable parent content scroll. */
-.admin-content-scroll:has(.event-slider-page) {
+.admin-content-scroll:has(.slider-page) {
   overflow: hidden;
 }
 

@@ -5,64 +5,64 @@ import { toast, toBackendDateTimeString } from "@repo/ui";
 import { baseDataApiRoutes } from "@/lib/base-data-api";
 import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
 import { toOptionalNumber, toOptionalString } from "@/lib/utils/form-primitive";
-import { eventNotifConfig } from "../lib/config";
+import { notifConfig } from "../lib/config";
 import {
-  mapEntityToEventNotifItem,
-  mapRowToEventNotifForm,
+  mapEntityToNotifItem,
+  mapRowToNotifForm,
 } from "../lib/mappers";
-import { deleteEventNotif, fetchEventNotifById, saveEventNotif } from "../api/notifications";
-import { EMPTY_EVENT_NOTIF_FORM, type EventNotifFormValues } from "./form-schema";
-import type { EventNotifItem } from "./types";
+import { deleteNotif, fetchNotifById, saveNotif } from "../api/notifications";
+import { EMPTY_NOTIF_FORM, type NotifFormValues } from "./form-schema";
+import type { NotifItem } from "./types";
 
-export function useEventNotifManager() {
+export function useNotifManager() {
   const queryClient = useQueryClient();
   const [isEditorOpen, setIsEditorOpen] = React.useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
-  const [editingRow, setEditingRow] = React.useState<EventNotifItem | null>(null);
-  const [deletingRow, setDeletingRow] = React.useState<EventNotifItem | null>(null);
-  const [editorDefaults, setEditorDefaults] = React.useState<EventNotifFormValues>(EMPTY_EVENT_NOTIF_FORM);
+  const [editingRow, setEditingRow] = React.useState<NotifItem | null>(null);
+  const [deletingRow, setDeletingRow] = React.useState<NotifItem | null>(null);
+  const [editorDefaults, setEditorDefaults] = React.useState<NotifFormValues>(EMPTY_NOTIF_FORM);
   const [editorSession, setEditorSession] = React.useState(0);
 
   const refreshGrid = React.useCallback(async () => {
     await queryClient.refetchQueries({
-      queryKey: ["data-grid", eventNotifConfig.api.grid],
+      queryKey: ["data-grid", notifConfig.api.grid],
       exact: false,
       type: "active",
     });
   }, [queryClient]);
 
   const fetchByIdMutation = useMutation({
-    mutationFn: (id: number) => fetchEventNotifById(id),
+    mutationFn: (id: number) => fetchNotifById(id),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteEventNotif(id),
+    mutationFn: (id: number) => deleteNotif(id),
   });
 
   const saveMutation = useMutation({
     mutationFn: (args: { payload: Record<string, unknown>; isEditMode: boolean }) =>
-      saveEventNotif(args.payload, args.isEditMode),
+      saveNotif(args.payload, args.isEditMode),
   });
 
   const openAddModal = React.useCallback(() => {
     setEditingRow(null);
-    setEditorDefaults(EMPTY_EVENT_NOTIF_FORM);
+    setEditorDefaults(EMPTY_NOTIF_FORM);
     setEditorSession((s) => s + 1);
     setIsEditorOpen(true);
   }, []);
 
   const openEditModal = React.useCallback(
-    async (row: EventNotifItem) => {
+    async (row: NotifItem) => {
       try {
         const response = await fetchByIdMutation.mutateAsync(row.id);
-        const freshItem = mapEntityToEventNotifItem(response) ?? row;
+        const freshItem = mapEntityToNotifItem(response) ?? row;
         setEditingRow(freshItem);
-        setEditorDefaults(mapRowToEventNotifForm(freshItem));
+        setEditorDefaults(mapRowToNotifForm(freshItem));
         setEditorSession((s) => s + 1);
         setIsEditorOpen(true);
       } catch {
         setEditingRow(row);
-        setEditorDefaults(mapRowToEventNotifForm(row));
+        setEditorDefaults(mapRowToNotifForm(row));
         setEditorSession((s) => s + 1);
         setIsEditorOpen(true);
         toast.error("دریافت اطلاعات اعلان انجام نشد؛ داده فعلی جدول نمایش داده شد.");
@@ -72,10 +72,10 @@ export function useEventNotifManager() {
   );
 
   const openDeleteModal = React.useCallback(
-    async (row: EventNotifItem) => {
+    async (row: NotifItem) => {
       try {
         const response = await fetchByIdMutation.mutateAsync(row.id);
-        const freshItem = mapEntityToEventNotifItem(response) ?? row;
+        const freshItem = mapEntityToNotifItem(response) ?? row;
         setDeletingRow(freshItem);
       } catch {
         setDeletingRow(row);
@@ -101,7 +101,7 @@ export function useEventNotifManager() {
   }, [deleteMutation, deletingRow, refreshGrid]);
 
   const handleEditorSubmit = React.useCallback(
-    async (form: EventNotifFormValues) => {
+    async (form: NotifFormValues) => {
       try {
         const startDate = toBackendDateTimeString(form.startDate);
         const endDate = toBackendDateTimeString(form.endDate);
@@ -131,7 +131,7 @@ export function useEventNotifManager() {
         toast.success(editingRow ? "اعلان با موفقیت ویرایش شد." : "اعلان با موفقیت اضافه شد.");
         setIsEditorOpen(false);
         setEditingRow(null);
-        setEditorDefaults(EMPTY_EVENT_NOTIF_FORM);
+        setEditorDefaults(EMPTY_NOTIF_FORM);
         void refreshGrid();
       } catch (error) {
         const message = error instanceof Error ? error.message : "ثبت اطلاعات انجام نشد. لطفاً دوباره تلاش کنید.";

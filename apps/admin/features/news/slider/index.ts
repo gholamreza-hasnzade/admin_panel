@@ -1,1 +1,1 @@
-export { EventSliderPage } from "./event-slider-page";
+export { SliderPage } from "./slider-page";

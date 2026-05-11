@@ -1,4 +1,4 @@
-import type { EventNotifFormValues, EventNotifItem } from "../model/types";
+import type { NotifFormValues, NotifItem } from "../model/types";
 
 function extractEntityPayload(raw: unknown) {
   if (!raw || typeof raw !== "object") return null;
@@ -13,7 +13,7 @@ function extractEntityPayload(raw: unknown) {
   return record;
 }
 
-export function mapEntityToEventNotifItem(raw: unknown): EventNotifItem | null {
+export function mapEntityToNotifItem(raw: unknown): NotifItem | null {
   const entity = extractEntityPayload(raw);
   if (!entity) return null;
   const id = Number(entity.id ?? entity.notificationId);
@@ -39,7 +39,7 @@ export function mapEntityToEventNotifItem(raw: unknown): EventNotifItem | null {
   };
 }
 
-export function mapRowToEventNotifForm(row: EventNotifItem): EventNotifFormValues {
+export function mapRowToNotifForm(row: NotifItem): NotifFormValues {
   return {
     title: row.title ?? "",
     shortText: row.shortText ?? "",

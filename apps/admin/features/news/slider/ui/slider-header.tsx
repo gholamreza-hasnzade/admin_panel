@@ -2,11 +2,11 @@
 
 import { Button } from "@repo/ui";
 
-type EventSliderHeaderProps = {
+type SliderHeaderProps = {
   onAddClick: () => void;
 };
 
-export function EventSliderHeader({ onAddClick }: EventSliderHeaderProps) {
+export function SliderHeader({ onAddClick }: SliderHeaderProps) {
   return (
     <div className="flex items-center justify-between gap-3">
       <h2 className="text-lg font-semibold">مدیریت اسلایدر</h2>

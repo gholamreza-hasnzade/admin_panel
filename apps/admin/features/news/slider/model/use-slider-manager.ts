@@ -6,13 +6,13 @@ import { baseDataApiRoutes } from "@/lib/base-data-api";
 import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
 import { toOptionalNumber, toOptionalString } from "@/lib/utils/form-primitive";
 
-import { eventSliderConfig } from "../lib/config";
+import { sliderConfig } from "../lib/config";
 import { mapEntityToSliderItem, mapRowToForm } from "../lib/mappers";
 import { deleteSlider, fetchSliderById, saveSlider } from "../api/slider";
 import { EMPTY_SLIDER_FORM, type SliderFormValues } from "./form-schema";
 import type { SliderItem } from "./types";
 
-export function useEventSliderManager() {
+export function useSliderManager() {
   const queryClient = useQueryClient();
   const [isEditorOpen, setIsEditorOpen] = React.useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
@@ -23,7 +23,7 @@ export function useEventSliderManager() {
 
   const refreshGrid = React.useCallback(async () => {
     await queryClient.refetchQueries({
-      queryKey: ["data-grid", eventSliderConfig.api.grid],
+      queryKey: ["data-grid", sliderConfig.api.grid],
       exact: false,
       type: "active",
     });

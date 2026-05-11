@@ -8,7 +8,6 @@ import {
   Modal,
   ModalActions,
   ModalContent,
-  ModalDescription,
   ModalHeader,
   ModalTitle,
   PersianDateTimeField,
@@ -23,7 +22,7 @@ import {
 } from "../model/form-schema";
 import type { SelectOption } from "../model/types";
 
-type EventSliderFormModalProps = {
+type SliderFormModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isEditMode: boolean;
@@ -41,7 +40,7 @@ type EventSliderFormModalProps = {
   onSubmit: (data: SliderFormValues) => void | Promise<void>;
 };
 
-export function EventSliderFormModal({
+export function SliderFormModal({
   open,
   onOpenChange,
   isEditMode,
@@ -54,7 +53,7 @@ export function EventSliderFormModal({
   fetchOptions,
   normalizeOptions,
   onSubmit,
-}: EventSliderFormModalProps) {
+}: SliderFormModalProps) {
   const {
     register,
     control,

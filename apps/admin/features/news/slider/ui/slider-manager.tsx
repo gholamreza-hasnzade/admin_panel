@@ -1,32 +1,35 @@
 "use client";
 
-import { EventNotifDeleteModal } from "./event-notif-delete-modal";
-import { EventNotifFormModal } from "./event-notif-form-modal";
-import { EventNotifGrid } from "./event-notif-grid";
-import { EventNotifHeader } from "./event-notif-header";
-import { useEventNotifManager } from "../model/use-event-notif-manager";
+import { SliderDeleteModal } from "./slider-delete-modal";
+import { SliderFormModal } from "./slider-form-modal";
+import { SliderGrid } from "./slider-grid";
+import { SliderHeader } from "./slider-header";
+import { useSliderManager } from "../model/use-slider-manager";
 
-export function EventNotifManager() {
-  const manager = useEventNotifManager();
+export function SliderManager() {
+  const manager = useSliderManager();
 
   return (
     <>
-      <EventNotifHeader onAddClick={manager.openAddModal} />
-      <EventNotifGrid onEditRow={manager.openEditModal} onDeleteRow={manager.openDeleteModal} />
-      <EventNotifFormModal
+      <SliderHeader onAddClick={manager.openAddModal} />
+      <SliderGrid onEditRow={manager.openEditModal} onDeleteRow={manager.openDeleteModal} />
+
+      <SliderFormModal
         open={manager.isEditorOpen}
         onOpenChange={manager.setIsEditorOpen}
         isEditMode={manager.isEditMode}
         defaultValues={manager.editorDefaults}
         sessionKey={manager.editorSession}
         isSaving={manager.isSaving}
+        isFetchingEditItem={manager.isFetchingEditItem}
         viewTypesUrl={manager.viewTypesUrl}
         userTypesUrl={manager.userTypesUrl}
         fetchOptions={manager.fetchSelectOptions}
         normalizeOptions={manager.normalizeOptions}
         onSubmit={manager.handleEditorSubmit}
       />
-      <EventNotifDeleteModal
+
+      <SliderDeleteModal
         open={manager.isDeleteOpen}
         onOpenChange={manager.setIsDeleteOpen}
         deletingRow={manager.deletingRow}

@@ -2,11 +2,11 @@
 
 import { AdminBreadcrumbs } from "@/components/admin-breadcrumbs";
 
-import { EventNotifManager } from "./ui/event-notif-manager";
+import { NotifManager } from "./ui/notif-manager";
 
-export function EventNotifPage() {
+export function NotifPage() {
   return (
-    <div className="event-notif-page w-full space-y-3">
+    <div className="notif-page w-full space-y-3">
       <AdminBreadcrumbs
         items={[
           { label: "داشبورد", href: "/dashboard" },
@@ -14,7 +14,7 @@ export function EventNotifPage() {
           { label: "اعلان‌ها" },
         ]}
       />
-      <EventNotifManager />
+      <NotifManager />
     </div>
   );
 }

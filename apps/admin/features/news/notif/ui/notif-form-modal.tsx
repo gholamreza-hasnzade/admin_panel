@@ -17,17 +17,17 @@ import {
 } from "@repo/ui";
 
 import {
-  EMPTY_EVENT_NOTIF_FORM,
-  eventNotifFormSchema,
-  type EventNotifFormValues,
+  EMPTY_NOTIF_FORM,
+  notifFormSchema,
+  type NotifFormValues,
 } from "../model/form-schema";
 import type { SelectOption } from "../model/types";
 
-type EventNotifFormModalProps = {
+type NotifFormModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isEditMode: boolean;
-  defaultValues: EventNotifFormValues;
+  defaultValues: NotifFormValues;
   /** Increments when editor opens so defaults reset reliably */
   sessionKey: number;
   isSaving: boolean;
@@ -38,10 +38,10 @@ type EventNotifFormModalProps = {
     params?: Record<string, string | number | boolean | null | undefined>;
   }) => Promise<unknown>;
   normalizeOptions: (raw: unknown) => SelectOption[];
-  onSubmit: (data: EventNotifFormValues) => void | Promise<void>;
+  onSubmit: (data: NotifFormValues) => void | Promise<void>;
 };
 
-export function EventNotifFormModal({
+export function NotifFormModal({
   open,
   onOpenChange,
   isEditMode,
@@ -53,16 +53,16 @@ export function EventNotifFormModal({
   fetchOptions,
   normalizeOptions,
   onSubmit,
-}: EventNotifFormModalProps) {
+}: NotifFormModalProps) {
   const {
     register,
     control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<EventNotifFormValues>({
-    resolver: zodResolver(eventNotifFormSchema),
-    defaultValues: EMPTY_EVENT_NOTIF_FORM,
+  } = useForm<NotifFormValues>({
+    resolver: zodResolver(notifFormSchema),
+    defaultValues: EMPTY_NOTIF_FORM,
     mode: "onTouched",
   });
 
