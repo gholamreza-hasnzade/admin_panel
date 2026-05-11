@@ -17,12 +17,12 @@ export type AdminNavItem = {
 export const ADMIN_NAV: AdminNavItem[] = [
   { id: "dashboard", label: "داشبورد", href: "/dashboard", icon: LayoutDashboard },
    {
-    id: "event",
-    label: "رویدادها",
+    id: "news",
+    label: "اخبار",
     icon: Building2,
     children: [
-      { id: "event-slider", label: "اسلایدر", href: "/event/slider", icon: Network },
-      { id: "event-news", label: "اعلان ها", href: "/event/notif", icon: Network },
+      { id: "news-slider", label: "اسلایدر", href: "/news/slider", icon: Network },
+      { id: "news-notif", label: "اعلان ها", href: "/news/notif", icon: Network },
     ],
   },
 ];
