@@ -82,15 +82,13 @@ export function EventSliderFormModal({
       <ModalContent dir="rtl" className="max-w-3xl">
         <ModalHeader>
           <ModalTitle>{isEditMode ? "ویرایش اسلایدر" : "افزودن اسلایدر"}</ModalTitle>
-          <ModalDescription>
-            {isEditMode ? "اطلاعات اسلایدر را به‌روزرسانی کنید." : "اطلاعات اسلایدر جدید را تکمیل کنید."}
-          </ModalDescription>
         </ModalHeader>
 
         <form className="contents" onSubmit={submit}>
           <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
             <TextField
               label="عنوان"
+              required
               {...register("title")}
               placeholder="عنوان اسلایدر"
               error={errors.title?.message}
@@ -98,6 +96,7 @@ export function EventSliderFormModal({
             <TextField label="زیرعنوان" {...register("subTitle")} placeholder="زیرعنوان" />
             <TextField
               label="آدرس تصویر"
+              required
               {...register("imageUrl")}
               placeholder="آدرس تصویر"
               error={errors.imageUrl?.message}
@@ -110,6 +109,7 @@ export function EventSliderFormModal({
               render={({ field, fieldState }) => (
                 <PersianDateTimeField
                   label="تاریخ شروع"
+                  required
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
@@ -124,6 +124,7 @@ export function EventSliderFormModal({
               render={({ field, fieldState }) => (
                 <PersianDateTimeField
                   label="تاریخ پایان"
+                  required
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
@@ -142,6 +143,7 @@ export function EventSliderFormModal({
               render={({ field, fieldState }) => (
                 <SelectField
                   label="نوع نمایش"
+                  required
                   value={field.value}
                   optionsUrl={viewTypesUrl}
                   fetchOptions={fetchOptions}
@@ -159,6 +161,7 @@ export function EventSliderFormModal({
               render={({ field, fieldState }) => (
                 <SelectField
                   label="نوع کاربر"
+                  required
                   value={field.value}
                   optionsUrl={userTypesUrl}
                   fetchOptions={fetchOptions}
@@ -173,6 +176,7 @@ export function EventSliderFormModal({
 
             <TextField
               label="ترتیب"
+              required
               {...register("orderIndex")}
               placeholder="ترتیب"
               inputMode="numeric"

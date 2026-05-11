@@ -8,11 +8,11 @@ import {
   Modal,
   ModalActions,
   ModalContent,
-  ModalDescription,
   ModalHeader,
   ModalTitle,
   PersianDateTimeField,
   SelectField,
+  Textarea,
   TextField,
 } from "@repo/ui";
 
@@ -81,30 +81,16 @@ export function EventNotifFormModal({
       <ModalContent dir="rtl" className="max-w-3xl">
         <ModalHeader>
           <ModalTitle>{isEditMode ? "ویرایش اعلان" : "افزودن اعلان"}</ModalTitle>
-          <ModalDescription>
-            {isEditMode ? "اطلاعات اعلان را به‌روزرسانی کنید." : "اطلاعات اعلان جدید را تکمیل کنید."}
-          </ModalDescription>
         </ModalHeader>
 
         <form className="contents" onSubmit={submit}>
           <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
             <TextField
               label="عنوان"
+              required
               {...register("title")}
               placeholder="عنوان اعلان"
               error={errors.title?.message}
-            />
-            <TextField
-              label="متن کوتاه"
-              {...register("shortText")}
-              placeholder="متن کوتاه"
-              error={errors.shortText?.message}
-            />
-            <TextField
-              label="متن کامل"
-              {...register("longText")}
-              placeholder="متن کامل"
-              error={errors.longText?.message}
             />
             <TextField label="ایجادکننده" {...register("creator")} placeholder="نام ایجادکننده" />
 
@@ -114,6 +100,7 @@ export function EventNotifFormModal({
               render={({ field, fieldState }) => (
                 <PersianDateTimeField
                   label="تاریخ شروع"
+                  required
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
@@ -128,6 +115,7 @@ export function EventNotifFormModal({
               render={({ field, fieldState }) => (
                 <PersianDateTimeField
                   label="تاریخ پایان"
+                  required
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
@@ -143,6 +131,7 @@ export function EventNotifFormModal({
               render={({ field, fieldState }) => (
                 <SelectField
                   label="نوع نمایش"
+                  required
                   value={field.value}
                   optionsUrl={viewTypesUrl}
                   fetchOptions={fetchOptions}
@@ -160,6 +149,7 @@ export function EventNotifFormModal({
               render={({ field, fieldState }) => (
                 <SelectField
                   label="نوع کاربر"
+                  required
                   value={field.value}
                   optionsUrl={userTypesUrl}
                   fetchOptions={fetchOptions}
@@ -177,6 +167,7 @@ export function EventNotifFormModal({
               render={({ field, fieldState }) => (
                 <SelectField
                   label="وضعیت نمایش"
+                  required
                   value={field.value}
                   options={[
                     { value: "true", label: "نمایش فعال" },
@@ -190,10 +181,27 @@ export function EventNotifFormModal({
 
             <TextField
               label="ترتیب"
+              required
               {...register("orderIndex")}
               placeholder="ترتیب"
               inputMode="numeric"
               error={errors.orderIndex?.message}
+            />
+            <Textarea
+              className="md:col-span-2"
+              label="متن کوتاه"
+              required
+              {...register("shortText")}
+              placeholder="متن کوتاه"
+              error={errors.shortText?.message}
+            />
+            <Textarea
+              className="md:col-span-2"
+              label="متن کامل"
+              required
+              {...register("longText")}
+              placeholder="متن کامل"
+              error={errors.longText?.message}
             />
           </div>
 
