@@ -1,4 +1,4 @@
-import { EventSliderPage } from "@/features/event-slider";
+import { EventSliderPage } from "@/features/news/slider";
 
 export default function Page() {
   return <EventSliderPage />;
