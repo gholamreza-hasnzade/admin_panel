@@ -31,10 +31,29 @@ export { Tabs, TabsList, TabsTrigger, TabsContent, tabsTriggerVariants } from ".
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "./accordion";
 
-export { DataGrid, DATA_GRID_ROOT_QUERY_KEY, getDataGridQueryKey } from "./data-grid";
+export {
+  DataTable,
+  columnHelper,
+  DataTableToolbar,
+  DataTablePagination,
+  DataTableSettings,
+  DataTableHeader,
+  DataTableBody,
+  DataTableSkeleton,
+  DataTableColumnOrdering,
+  DataTableTruncatedCell,
+  applyAutoTruncateTextCells,
+  useDataTableApi,
+  useDataTablePagination,
+  DEFAULT_DATA_TABLE_API_PARAM_NAMES,
+  DATA_TABLE_ROOT_QUERY_KEY,
+} from "./dataTable";
 export type {
-  DataGridProps,
-  DataGridColumnDef,
-  DataGridColumnMeta,
-  DataGridRowAction,
-} from "./data-grid";
+  DataTableProps,
+  ApiResponse,
+  DataTableApiConfig,
+  DataTableApiParamNames,
+  DataTableApiQueryFormat,
+  UseDataTablePaginationArgs,
+  DataTableAutoTruncateMeta,
+} from "./dataTable";

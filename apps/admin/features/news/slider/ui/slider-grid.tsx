@@ -1,7 +1,8 @@
 "use client";
 
+import type { ColumnDef } from "@tanstack/react-table";
 import type { ReactNode } from "react";
-import { DataGrid, type DataGridColumnDef } from "@repo/ui";
+import { DataTable } from "@repo/ui";
 
 import { api } from "@/lib/api";
 
@@ -13,11 +14,64 @@ function showText(value: string | number | null | undefined): ReactNode {
   return String(value);
 }
 
-const VerticalDotsIcon = () => (
-  <span aria-hidden className="text-base leading-none text-muted-foreground">
-    ⋮
-  </span>
-);
+const sliderColumns: ColumnDef<SliderItem, unknown>[] = [
+  { accessorKey: "id", header: "شناسه" },
+  {
+    accessorKey: "imageUrl",
+    header: "تصویر",
+    cell: ({ row }) => {
+      const src = row.original.imageUrl;
+      if (!src) return <span className="text-muted-foreground">بدون تصویر</span>;
+      return (
+        <a
+          href={src}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary inline-block max-w-68 truncate hover:underline"
+          title={src}
+        >
+          {src}
+        </a>
+      );
+    },
+  },
+  {
+    id: "pStartDate",
+    accessorFn: (row) => row.pStartDate ?? row.startDate ?? "",
+    header: "تاریخ شروع",
+    cell: ({ row }) => showText(row.original.pStartDate ?? row.original.startDate),
+  },
+  {
+    id: "pEndDate",
+    accessorFn: (row) => row.pEndDate ?? row.endDate ?? "",
+    header: "تاریخ پایان",
+    cell: ({ row }) => showText(row.original.pEndDate ?? row.original.endDate),
+  },
+  {
+    accessorKey: "viewTypeTitle",
+    header: "نوع نمایش",
+    cell: ({ row }) => showText(row.original.viewTypeTitle),
+  },
+  {
+    accessorKey: "userTypeTitle",
+    header: "نوع کاربر",
+    cell: ({ row }) => showText(row.original.userTypeTitle),
+  },
+  { accessorKey: "orderIndex", header: "ترتیب" },
+  {
+    accessorKey: "href",
+    header: "لینک",
+    cell: ({ row }) => {
+      const href = row.original.href;
+      if (!href) return <span className="text-muted-foreground">-</span>;
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+          باز کردن لینک
+        </a>
+      );
+    },
+  },
+];
 
 const TrashIcon = () => (
   <svg
@@ -37,74 +91,25 @@ const TrashIcon = () => (
   </svg>
 );
 
-const sliderColumns: DataGridColumnDef<SliderItem>[] = [
-  {
-    accessorKey: "id",
-    header: "شناسه",
-    cell: ({ row }) => <span className="font-medium">{row.original.id}</span>,
-  },
-  {
-    accessorKey: "imageUrl",
-    header: "تصویر",
-    cell: ({ row }) => {
-      const src = row.original.imageUrl;
-      if (!src) return <span className="text-muted-foreground">بدون تصویر</span>;
-      return (
-        <a
-          href={src}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block max-w-68 truncate text-primary hover:underline"
-          title={src}
-        >
-          {src}
-        </a>
-      );
-    },
-  },
-  {
-    accessorKey: "pStartDate",
-    header: "تاریخ شروع",
-    cell: ({ row }) => showText(row.original.pStartDate ?? row.original.startDate),
-  },
-  {
-    accessorKey: "pEndDate",
-    header: "تاریخ پایان",
-    cell: ({ row }) => showText(row.original.pEndDate ?? row.original.endDate),
-  },
-  {
-    accessorKey: "viewTypeTitle",
-    header: "نوع نمایش",
-    cell: ({ row }) => showText(row.original.viewTypeTitle),
-  },
-  {
-    accessorKey: "userTypeTitle",
-    header: "نوع کاربر",
-    cell: ({ row }) => showText(row.original.userTypeTitle),
-  },
-  {
-    accessorKey: "orderIndex",
-    header: "ترتیب",
-    cell: ({ row }) => showText(row.original.orderIndex),
-  },
-  {
-    accessorKey: "href",
-    header: "لینک",
-    cell: ({ row }) => {
-      const href = row.original.href;
-      if (!href) return <span className="text-muted-foreground">-</span>;
-      return (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-          باز کردن لینک
-        </a>
-      );
-    },
-  },
-];
+const EditIcon = () => (
+  <svg
+    aria-hidden
+    viewBox="0 0 24 24"
+    className="size-3.5"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4z" />
+  </svg>
+);
 
 type SliderGridProps = {
-  onEditRow: (row: SliderItem) => void;
-  onDeleteRow: (row: SliderItem) => void;
+  onEditRow: (row: SliderItem) => void | Promise<void>;
+  onDeleteRow: (row: SliderItem) => void | Promise<void>;
 };
 
 export function SliderGrid({ onEditRow, onDeleteRow }: SliderGridProps) {
@@ -112,46 +117,54 @@ export function SliderGrid({ onEditRow, onDeleteRow }: SliderGridProps) {
 
   if (!appApiBaseUrl) {
     return (
-      <div className="rounded-md border border-destructive/40 bg-card px-4 py-3 text-sm text-destructive">
-        متغیر محیطی <code className="rounded bg-muted px-1">NEXT_PUBLIC_APP_API_BASE_URL</code> تنظیم نشده است.
+      <div className="border-destructive/40 bg-card text-destructive rounded-md border px-4 py-3 text-sm">
+        متغیر محیطی <code className="bg-muted rounded px-1">NEXT_PUBLIC_APP_API_BASE_URL</code> تنظیم نشده است.
       </div>
     );
   }
 
   return (
-    <DataGrid<SliderItem>
-      apiClient={api}
-      url={sliderConfig.api.grid}
-      columns={sliderColumns}
+    <DataTable<SliderItem, unknown>
       className="slider-grid w-full"
-      tableWrapperClassName="slider-grid__table"
-      dataPath="results"
-      totalPath="rowCount"
-      initialPageSize={sliderConfig.ui.defaultPageSize}
+      tableClassName="slider-grid__table min-w-[920px]"
+      columns={sliderColumns}
+      urlDatas={sliderConfig.api.grid}
+      apiClient={api}
+      urlDataPath="results"
+      urlTotalPath="rowCount"
+      pageSize={sliderConfig.ui.defaultPageSize}
       pageSizeOptions={[10, 20, 50]}
-      maxBodyHeightClassName="h-[68dvh]"
-      emptyMessage="هیچ اسلایدری یافت نشد."
-      globalSearchPlaceholder="جستجو در اسلایدرها..."
-      showGlobalSearch={false}
-      rowActions={[
+      enableRowSelection={false}
+      enableFiltering={false}
+      showGlobalFilter={false}
+      showExportButtons={false}
+      showColumnOrdering={false}
+      showSettingsButton={false}
+      showRefreshButton={false}
+      actionsLabel="عملیات"
+      showActions
+      actions={[
         {
           label: "ویرایش",
-          onClick: (row) => onEditRow(row),
-          variant: "ghost",
-          className: "w-full justify-start hover:bg-accent/60",
+          icon: <EditIcon />,
+          variant: "outline",
+          onClick: (row) => {
+            void onEditRow(row.original);
+          },
         },
         {
           label: "حذف",
-          onClick: (row) => onDeleteRow(row),
-          variant: "ghost",
           icon: <TrashIcon />,
-          className: "w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive",
+          variant: "destructive",
+          onClick: (row) => {
+            void onDeleteRow(row.original);
+          },
         },
       ]}
-      rowActionsMode="toggle"
-      rowActionsToggleLabel={null}
-      rowActionsToggleIcon={<VerticalDotsIcon />}
-      actionsHeader="عملیات"
+      emptyMessage="هیچ اسلایدری یافت نشد."
+      loadingMessage="در حال بارگذاری..."
+      errorMessage="خطا در دریافت لیست اسلایدرها"
+      getRowId={(row) => String(row.id)}
     />
   );
 }

@@ -1,87 +1,44 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { DataGrid, type DataGridColumnDef } from "@repo/ui";
+import type { ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@repo/ui";
 
 import { api } from "@/lib/api";
 
 import { notifConfig } from "../lib/config";
 import type { NotifItem } from "../model/types";
 
-function showText(value: string | number | null | undefined): ReactNode {
-  if (value === null || value === undefined || value === "") return "-";
-  return String(value);
-}
-
-const notifColumns: DataGridColumnDef<NotifItem>[] = [
+const notifColumns: ColumnDef<NotifItem, unknown>[] = [
+  { accessorKey: "id", header: "شناسه" },
+  { accessorKey: "title", header: "عنوان" },
+  { accessorKey: "shortText", header: "متن کوتاه" },
+  { accessorKey: "longText", header: "متن کامل" },
   {
-    accessorKey: "id",
-    header: "شناسه",
-    cell: ({ row }) => <span className="font-medium">{row.original.id}</span>,
-  },
-  {
-    accessorKey: "title",
-    header: "عنوان",
-    cell: ({ row }) => showText(row.original.title),
-  },
-  {
-    accessorKey: "shortText",
-    header: "متن کوتاه",
-    cell: ({ row }) => showText(row.original.shortText),
-  },
-  {
-    accessorKey: "longText",
-    header: "متن کامل",
-    cell: ({ row }) => showText(row.original.longText),
-  },
-  {
-    accessorKey: "pStartDate",
+    id: "pStartDate",
+    accessorFn: (row) => row.pStartDate ?? row.startDate ?? "",
     header: "تاریخ شروع",
-    cell: ({ row }) => showText(row.original.pStartDate ?? row.original.startDate),
   },
   {
-    accessorKey: "pEndDate",
+    id: "pEndDate",
+    accessorFn: (row) => row.pEndDate ?? row.endDate ?? "",
     header: "تاریخ پایان",
-    cell: ({ row }) => showText(row.original.pEndDate ?? row.original.endDate),
   },
-  {
-    accessorKey: "creator",
-    header: "ایجادکننده",
-    cell: ({ row }) => showText(row.original.creator),
-  },
+  { accessorKey: "creator", header: "ایجادکننده" },
   {
     accessorKey: "visible",
     header: "وضعیت نمایش",
     cell: ({ row }) =>
       row.original.visible === null ? "-" : row.original.visible ? "فعال" : "غیرفعال",
   },
-  {
-    accessorKey: "viewSideTitle",
-    header: "محل نمایش",
-    cell: ({ row }) => showText(row.original.viewSideTitle),
-  },
-  {
-    accessorKey: "userTypeTitle",
-    header: "نوع کاربر",
-    cell: ({ row }) => showText(row.original.userTypeTitle),
-  },
-  {
-    accessorKey: "orderIndex",
-    header: "ترتیب",
-    cell: ({ row }) => showText(row.original.orderIndex),
-  },
+  { accessorKey: "viewSideTitle", header: "محل نمایش" },
+  { accessorKey: "userTypeTitle", header: "نوع کاربر" },
+  { accessorKey: "orderIndex", header: "ترتیب" },
   {
     accessorKey: "deleted",
     header: "حذف شده",
     cell: ({ row }) => (row.original.deleted === null ? "-" : row.original.deleted ? "بله" : "خیر"),
   },
 ];
-
-const VerticalDotsIcon = () => (
-  <span aria-hidden className="text-base leading-none text-muted-foreground">
-    ⋮
-  </span>
-);
 
 const TrashIcon = () => (
   <svg
@@ -134,40 +91,47 @@ export function NotifGrid({ onEditRow, onDeleteRow }: NotifGridProps) {
   }
 
   return (
-    <DataGrid<NotifItem>
-      apiClient={api}
-      url={notifConfig.api.grid}
-      columns={notifColumns}
+    <DataTable<NotifItem, unknown>
       className="notif-grid w-full"
-      tableWrapperClassName="notif-grid__table"
-      dataPath="results"
-      totalPath="rowCount"
-      initialPageSize={notifConfig.ui.defaultPageSize}
-      pageSizeOptions={[10, 20, 50]}
-      maxBodyHeightClassName="h-[68dvh]"
-      emptyMessage="هیچ اعلانی یافت نشد."
-      globalSearchPlaceholder="جستجو در اعلان ها..."
-      showGlobalSearch={false}
-      rowActions={[
+      tableClassName="notif-grid__table min-w-[920px]"
+      columns={notifColumns}
+      urlDatas={notifConfig.api.grid}
+      apiClient={api}
+      urlDataPath="results"
+      urlTotalPath="rowCount"
+      pageSize={notifConfig.ui.defaultPageSize}
+      pageSizeOptions={[1, 2, 5]}
+      enableRowSelection={false}
+      enableFiltering={false}
+      showGlobalFilter={false}
+      showExportButtons={false}
+      showColumnOrdering={false}
+      showSettingsButton={false}
+      showRefreshButton={false}
+      actionsLabel="عملیات"
+      showActions
+      actions={[
         {
           label: "ویرایش",
-          onClick: (row) => onEditRow(row),
-          variant: "ghost",
           icon: <EditIcon />,
-          className: "w-full justify-start hover:bg-accent/60",
+          variant: "outline",
+          onClick: (row) => {
+            void onEditRow(row.original);
+          },
         },
         {
           label: "حذف",
-          onClick: (row) => onDeleteRow(row),
-          variant: "ghost",
           icon: <TrashIcon />,
-          className: "w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive",
+          variant: "destructive",
+          onClick: (row) => {
+            void onDeleteRow(row.original);
+          },
         },
       ]}
-      rowActionsMode="toggle"
-      rowActionsToggleLabel={null}
-      rowActionsToggleIcon={<VerticalDotsIcon />}
-      actionsHeader="عملیات"
+      emptyMessage="هیچ اعلانی یافت نشد."
+      loadingMessage="در حال بارگذاری..."
+      errorMessage="خطا در دریافت لیست اعلان‌ها"
+      getRowId={(row) => String(row.id)}
     />
   );
 }

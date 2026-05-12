@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast, toBackendDateTimeString, DATA_GRID_ROOT_QUERY_KEY } from "@repo/ui";
+import { toast, toBackendDateTimeString, DATA_TABLE_ROOT_QUERY_KEY } from "@repo/ui";
 
 import { baseDataApiRoutes } from "@/lib/base-data-api";
 import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
@@ -24,10 +24,9 @@ export function useNotifManager() {
   const [editorSession, setEditorSession] = React.useState(0);
 
   const refreshGrid = React.useCallback(async () => {
-    await queryClient.refetchQueries({
-      queryKey: [DATA_GRID_ROOT_QUERY_KEY, notifConfig.api.grid],
+    await queryClient.invalidateQueries({
+      queryKey: [DATA_TABLE_ROOT_QUERY_KEY, notifConfig.api.grid],
       exact: false,
-      type: "active",
     });
   }, [queryClient]);
 
@@ -93,7 +92,7 @@ export function useNotifManager() {
       toast.success("اعلان با موفقیت حذف شد.");
       setIsDeleteOpen(false);
       setDeletingRow(null);
-      void refreshGrid();
+      await refreshGrid();
     } catch (error) {
       const message = error instanceof Error ? error.message : "حذف انجام نشد. لطفاً دوباره تلاش کنید.";
       toast.error(message);
@@ -132,7 +131,7 @@ export function useNotifManager() {
         setIsEditorOpen(false);
         setEditingRow(null);
         setEditorDefaults(EMPTY_NOTIF_FORM);
-        void refreshGrid();
+        await refreshGrid();
       } catch (error) {
         const message = error instanceof Error ? error.message : "ثبت اطلاعات انجام نشد. لطفاً دوباره تلاش کنید.";
         toast.error(message);
