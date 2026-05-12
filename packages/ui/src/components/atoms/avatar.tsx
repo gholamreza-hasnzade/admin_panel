@@ -7,13 +7,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils";
 
 const avatarVariants = cva(
-  "relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden rounded-full bg-muted",
+  "relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden rounded-full bg-muted touch-manipulation",
   {
     variants: {
       size: {
-        sm: "h-8 w-8 text-xs",
-        default: "h-10 w-10 text-sm",
-        lg: "h-14 w-14 text-base",
+        sm: "h-7 w-7 text-[10px] sm:h-8 sm:w-8 sm:text-xs",
+        default: "h-9 w-9 text-xs sm:h-10 sm:w-10 sm:text-sm",
+        lg: "h-11 w-11 text-sm sm:h-14 sm:w-14 sm:text-base",
       },
     },
     defaultVariants: {

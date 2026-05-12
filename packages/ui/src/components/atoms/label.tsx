@@ -4,12 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils";
 
 const labelVariants = cva(
-  "select-none font-medium leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+  "select-none touch-manipulation font-medium text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
   {
     variants: {
       size: {
-        default: "text-sm",
-        sm: "text-xs",
+        default: "text-xs leading-snug sm:text-sm sm:leading-none",
+        sm: "text-[11px] leading-snug sm:text-xs sm:leading-none",
       },
     },
     defaultVariants: {

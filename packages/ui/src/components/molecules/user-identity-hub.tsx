@@ -4,7 +4,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 
 import { cn } from "../../lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "../atoms/avatar";
+import { Avatar, AvatarImage } from "../atoms/avatar";
 
 export type UserIdentityHubUser = {
   name: string;
@@ -56,11 +56,13 @@ export function UserIdentityHub({
   const updateMenuPosition = React.useCallback(() => {
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
-    const width = 256;
+    const maxMenuWidth = 256;
+    const width = Math.min(maxMenuWidth, window.innerWidth - 16);
     const left = Math.max(8, Math.min(window.innerWidth - width - 8, rect.right - width));
+    const offsetTop = window.innerWidth < 640 ? 6 : 8;
     setMenuStyle({
       position: "fixed",
-      top: rect.bottom + 8,
+      top: rect.bottom + offsetTop,
       left,
       width,
       zIndex,
@@ -113,19 +115,20 @@ export function UserIdentityHub({
         ref={triggerRef}
         type="button"
         className={cn(
-          "flex items-center gap-3 rounded-lg border border-border bg-card/70 px-2 py-1.5 text-right transition-colors hover:bg-muted/70",
+          "flex touch-manipulation items-center gap-2 rounded-md border border-border bg-card/70 px-1.5 py-1 text-right transition-colors hover:bg-muted/70 sm:gap-3 sm:rounded-lg sm:px-2 sm:py-1.5",
           triggerClassName,
         )}
         onClick={() => setOpen((prev) => !prev)}
         aria-label={triggerAriaLabel}
+        aria-expanded={open}
+        aria-haspopup="menu"
       >
-        <div className="hidden sm:block">
-          <p className="text-xs font-semibold text-foreground">{user.name}</p>
-          <p className="text-[11px] text-muted-foreground">{user.role}</p>
+        <div className="hidden min-w-0 sm:block">
+          <p className="truncate text-[11px] font-semibold text-foreground sm:text-xs">{user.name}</p>
+          <p className="truncate text-[10px] text-muted-foreground sm:text-[11px]">{user.role}</p>
         </div>
         <Avatar size="sm" name={user.name}>
           <AvatarImage src={user.avatarUrl} alt={user.name} />
-          <AvatarFallback>GH</AvatarFallback>
         </Avatar>
       </button>
 
@@ -134,22 +137,26 @@ export function UserIdentityHub({
             <div
               ref={menuRef}
               style={menuStyle}
-              className={cn("rounded-xl border border-border bg-card p-2 shadow-lg", menuClassName)}
+              className={cn(
+                "rounded-lg border border-border bg-card p-1.5 shadow-lg sm:rounded-xl sm:p-2",
+                menuClassName,
+              )}
             >
-              <div className="mb-2 rounded-lg bg-muted/50 p-2">
-                <p className="text-xs font-semibold">{user.name}</p>
-                <p className="mt-0.5 text-[11px] text-muted-foreground">{user.email}</p>
+              <div className="mb-1.5 rounded-md bg-muted/50 p-1.5 sm:mb-2 sm:rounded-lg sm:p-2">
+                <p className="truncate text-[11px] font-semibold sm:text-xs">{user.name}</p>
+                <p className="mt-0.5 truncate text-[10px] text-muted-foreground sm:text-[11px]">{user.email}</p>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-0.5 sm:space-y-1">
                 {actions.map((action) => (
                   <button
                     key={action.id}
                     type="button"
-                    className={
+                    className={cn(
+                      "min-h-9 w-full touch-manipulation rounded-md px-2 py-2 text-right text-[11px] transition-colors sm:min-h-10 sm:py-2.5 sm:text-xs",
                       action.variant === "destructive"
-                        ? "w-full rounded-md px-2 py-2 text-right text-xs text-destructive transition-colors hover:bg-destructive/10"
-                        : "w-full rounded-md px-2 py-2 text-right text-xs text-foreground transition-colors hover:bg-muted"
-                    }
+                        ? "text-destructive hover:bg-destructive/10"
+                        : "text-foreground hover:bg-muted",
+                    )}
                     onClick={() => {
                       action.onClick?.();
                       onAction?.(action);

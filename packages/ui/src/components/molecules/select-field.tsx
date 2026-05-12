@@ -176,14 +176,14 @@ function SelectFieldBase<TValue extends string = string>({
   const helper = React.useMemo(() => {
     if (error) {
       return (
-        <p id={errorId} className="text-xs text-destructive">
+        <p id={errorId} className="text-[10px] leading-snug text-destructive sm:text-xs">
           {error}
         </p>
       );
     }
     if (hint) {
       return (
-        <p id={hintId} className="text-xs text-muted-foreground">
+        <p id={hintId} className="text-[10px] leading-snug text-muted-foreground sm:text-xs">
           {hint}
         </p>
       );
@@ -220,7 +220,7 @@ function SelectFieldBase<TValue extends string = string>({
   );
 
   return (
-    <div className={cn("flex w-full flex-col gap-1.5", className)}>
+    <div className={cn("flex w-full flex-col gap-1 sm:gap-1.5", className)}>
       {label ? (
         <Label htmlFor={selectId}>
           {label}
@@ -243,7 +243,7 @@ function SelectFieldBase<TValue extends string = string>({
               aria-describedby={describedBy}
               onClick={() => setOpen((prev) => !prev)}
               className={cn(
-                "flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 text-right text-sm text-foreground outline-none transition-colors",
+                "flex h-9 w-full touch-manipulation items-center justify-between gap-1.5 rounded-md border border-input bg-background px-2.5 text-right text-xs text-foreground outline-none transition-colors sm:h-10 sm:gap-2 sm:px-3 sm:text-sm",
                 "focus:border-ring focus:ring-1 focus:ring-ring",
                 "disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-70",
                 error && "border-destructive focus:border-destructive focus:ring-destructive/30",
@@ -254,14 +254,17 @@ function SelectFieldBase<TValue extends string = string>({
                 {effectiveLoading ? loadingText : selectedLabel}
               </span>
               <UpDownIcon
-                className={cn("shrink-0 text-muted-foreground transition-transform", open && "rotate-180")}
+                className={cn(
+                  "size-3.5 shrink-0 text-muted-foreground transition-transform sm:size-4",
+                  open && "rotate-180",
+                )}
                 aria-hidden
               />
             </button>
 
             {open ? (
-              <div className="absolute inset-x-0 top-full z-40 mt-1 overflow-hidden rounded-md border border-border bg-popover shadow-md">
-                <div className="border-b border-border/70 p-2">
+              <div className="absolute inset-x-0 top-full z-40 mt-0.5 overflow-hidden rounded-md border border-border bg-popover shadow-md sm:mt-1">
+                <div className="border-b border-border/70 p-1.5 sm:p-2">
                   <input
                     id={searchId}
                     title={typeof label === "string" ? label : "search"}
@@ -269,16 +272,16 @@ function SelectFieldBase<TValue extends string = string>({
                     value={searchText}
                     onChange={(event) => setSearchText(event.target.value)}
                     placeholder={searchPlaceholder}
-                    className="h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs outline-none transition-colors focus:border-ring focus:ring-1 focus:ring-ring"
+                    className="h-8 w-full touch-manipulation rounded-md border border-input bg-background px-2 text-[11px] outline-none transition-colors focus:border-ring focus:ring-1 focus:ring-ring sm:h-9 sm:px-2.5 sm:text-xs"
                     aria-label={typeof label === "string" ? `جستجو در ${label}` : "جستجو در گزینه‌ها"}
                   />
                 </div>
-                <ul className="max-h-56 overflow-auto py-1">
+                <ul className="max-h-48 overflow-auto py-0.5 sm:max-h-56 sm:py-1">
                   {allowEmptyOption ? (
                     <li>
                       <button
                         type="button"
-                        className="w-full px-3 py-2 text-right text-sm text-muted-foreground hover:bg-accent"
+                        className="w-full touch-manipulation px-2.5 py-1.5 text-right text-xs text-muted-foreground hover:bg-accent sm:px-3 sm:py-2 sm:text-sm"
                         onClick={() => {
                           onValueChange?.(multiple ? ([] as TValue[]) : "");
                           if (!multiple) setOpen(false);
@@ -298,19 +301,23 @@ function SelectFieldBase<TValue extends string = string>({
                           disabled={option.disabled}
                           onClick={() => toggleOption(option.value)}
                           className={cn(
-                            "flex w-full items-center justify-between px-3 py-2 text-right text-sm hover:bg-accent",
+                            "flex w-full touch-manipulation items-center justify-between px-2.5 py-1.5 text-right text-xs hover:bg-accent sm:px-3 sm:py-2 sm:text-sm",
                             option.disabled && "cursor-not-allowed opacity-50",
                             selected && "bg-accent/70 font-medium text-primary",
                           )}
                         >
                           <span className="truncate">{option.label}</span>
-                          {selected ? <span aria-hidden>✓</span> : null}
+                          {selected ? (
+                            <span className="shrink-0 ps-1 text-[11px] sm:text-sm" aria-hidden>
+                              ✓
+                            </span>
+                          ) : null}
                         </button>
                       </li>
                     );
                   })}
                   {hasNoOptions ? (
-                    <li className="px-3 py-2 text-right text-xs text-muted-foreground">
+                    <li className="px-2.5 py-1.5 text-right text-[11px] text-muted-foreground sm:px-3 sm:py-2 sm:text-xs">
                       {emptyOptionsText ?? "گزینه‌ای یافت نشد"}
                     </li>
                   ) : null}
@@ -330,7 +337,7 @@ function SelectFieldBase<TValue extends string = string>({
             disabled={effectiveDisabled}
             aria-describedby={describedBy}
             className={cn(
-              "h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none transition-colors",
+              "h-9 w-full touch-manipulation rounded-md border border-input bg-background px-2.5 text-xs text-foreground outline-none transition-colors sm:h-10 sm:px-3 sm:text-sm",
               "focus:border-ring focus:ring-1 focus:ring-ring",
               "disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-70",
               error && "border-destructive focus:border-destructive focus:ring-destructive/30",

@@ -9,9 +9,9 @@ import { cn } from "../../lib/utils";
 const progressVariants = cva("relative w-full overflow-hidden rounded-full bg-muted", {
   variants: {
     size: {
-      sm: "h-1.5",
-      default: "h-2.5",
-      lg: "h-3.5",
+      sm: "h-1 sm:h-1.5",
+      default: "h-2 sm:h-2.5",
+      lg: "h-3 sm:h-3.5",
     },
   },
   defaultVariants: {
@@ -61,7 +61,7 @@ const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root
     const percentage = (clampedValue / normalizedMax) * 100;
 
     return (
-      <div className="w-full space-y-1.5">
+      <div className="w-full space-y-1 sm:space-y-1.5">
         <ProgressPrimitive.Root
           ref={ref}
           max={normalizedMax}
@@ -75,7 +75,14 @@ const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root
           />
         </ProgressPrimitive.Root>
         {showValueLabel ? (
-          <p className={cn("text-xs text-muted-foreground", labelClassName)}>{Math.round(percentage)}%</p>
+          <p
+            className={cn(
+              "text-[10px] leading-snug text-muted-foreground sm:text-xs sm:leading-normal",
+              labelClassName,
+            )}
+          >
+            {Math.round(percentage)}%
+          </p>
         ) : null}
       </div>
     );

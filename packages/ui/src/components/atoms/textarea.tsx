@@ -8,7 +8,7 @@ import { Label } from "./label";
 
 const textareaVariants = cva(
   [
-    "flex w-full min-w-0 resize-none rounded-md border bg-background px-3 py-2 text-sm text-foreground",
+    "flex w-full min-w-0 resize-none rounded-md border bg-background touch-manipulation px-2.5 py-1.5 text-foreground sm:px-3 sm:py-2",
     "transition-[color,box-shadow,border-color,background-color,opacity]",
     "placeholder:text-muted-foreground",
     "hover:border-ring/70",
@@ -19,11 +19,10 @@ const textareaVariants = cva(
   {
     variants: {
       size: {
-        sm: "min-h-20 text-xs",
-        default: "min-h-24 text-sm",
-        lg: "min-h-28 text-base",
-      },
-      state: {
+        sm: "min-h-16 px-2 py-1.5 text-[11px] sm:min-h-20 sm:px-2.5 sm:py-2 sm:text-xs",
+        default: "min-h-20 text-xs sm:min-h-24 sm:text-sm",
+        lg: "min-h-24 py-2 text-sm sm:min-h-28 sm:py-2.5 sm:text-base",
+      },      state: {
         default: "border-input",
         error: "border-destructive focus-visible:ring-destructive/40",
         success: "border-emerald-500 focus-visible:ring-emerald-500/35",
@@ -81,7 +80,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const currentLength = isControlled ? `${value ?? ""}`.length : localLength;
 
     return (
-      <div className={cn("flex w-full flex-col gap-1.5", containerClassName)}>
+      <div className={cn("flex w-full flex-col gap-1 sm:gap-1.5", containerClassName)}>
         {label ? (
           <Label htmlFor={textareaId} size={labelSize} className={cn(disabled && "cursor-not-allowed opacity-70")}>
             {label}
@@ -109,13 +108,13 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         />
 
         {(error || hint || (showCount && typeof maxLength === "number")) ? (
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-1.5 sm:gap-2">
             {error ? (
-              <p id={errorId} className="text-xs text-destructive">
+              <p id={errorId} className="text-[10px] leading-snug text-destructive sm:text-xs">
                 {error}
               </p>
             ) : hint ? (
-              <p id={hintId} className="text-xs text-muted-foreground">
+              <p id={hintId} className="text-[10px] leading-snug text-muted-foreground sm:text-xs">
                 {hint}
               </p>
             ) : (
@@ -123,7 +122,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             )}
 
             {showCount && typeof maxLength === "number" ? (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[10px] leading-snug text-muted-foreground tabular-nums sm:text-xs">
                 {currentLength}/{maxLength}
               </p>
             ) : null}

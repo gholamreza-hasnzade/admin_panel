@@ -9,7 +9,7 @@ import { Label } from "../atoms/label";
 
 const radioVariants = cva(
   [
-    "peer shrink-0 rounded-full border transition-[color,box-shadow,border-color,background-color,opacity]",
+    "peer shrink-0 touch-manipulation rounded-full border transition-[color,box-shadow,border-color,background-color,opacity]",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "disabled:cursor-not-allowed disabled:opacity-50",
     "hover:border-ring/70",
@@ -17,9 +17,9 @@ const radioVariants = cva(
   {
     variants: {
       size: {
-        sm: "size-3.5",
-        default: "size-4",
-        lg: "size-5",
+        sm: "size-3 sm:size-3.5",
+        default: "size-3.5 sm:size-4",
+        lg: "size-4 sm:size-5",
       },
       state: {
         default: "border-input bg-background",
@@ -38,9 +38,9 @@ const radioVariants = cva(
 const radioIndicatorVariants = cva("rounded-full", {
   variants: {
     size: {
-      sm: "size-1.5",
-      default: "size-2",
-      lg: "size-2.5",
+      sm: "size-1 sm:size-1.5",
+      default: "size-1.5 sm:size-2",
+      lg: "size-2 sm:size-2.5",
     },
     state: {
       default: "bg-primary",
@@ -107,11 +107,11 @@ const RadioGroup = React.forwardRef<
     const labelSize = size === "sm" ? "sm" : "default";
 
     return (
-      <div className={cn("flex w-full flex-col gap-1.5", containerClassName)}>
+      <div className={cn("flex w-full flex-col gap-1 sm:gap-1.5", containerClassName)}>
         {label ? (
           <Label size={labelSize}>
             {label}
-            {required ? <span className="ms-1 text-destructive">*</span> : null}
+            {required ? <span className="ms-1 font-semibold text-destructive" aria-hidden>*</span> : null}
           </Label>
         ) : null}
 
@@ -124,8 +124,8 @@ const RadioGroup = React.forwardRef<
           required={required}
           aria-describedby={describedBy}
           className={cn(
-            "grid gap-2 text-right",
-            orientation === "horizontal" && "grid-flow-col auto-cols-max items-start gap-5",
+            "touch-manipulation grid gap-1.5 text-right sm:gap-2",
+            orientation === "horizontal" && "grid-flow-col auto-cols-max items-start gap-3 sm:gap-5",
             className,
           )}
           {...props}
@@ -134,7 +134,7 @@ const RadioGroup = React.forwardRef<
             const optionId = `${groupId}-option-${index}`;
             const optionDisabled = disabled || option.disabled;
             return (
-              <div key={option.value} className={cn("flex items-start gap-2.5", optionClassName)}>
+              <div key={option.value} className={cn("flex items-start gap-2 sm:gap-2.5", optionClassName)}>
                 <RadioGroupPrimitive.Item
                   id={optionId}
                   value={option.value}
@@ -146,12 +146,17 @@ const RadioGroup = React.forwardRef<
                   </RadioGroupPrimitive.Indicator>
                 </RadioGroupPrimitive.Item>
 
-                <div className="flex min-w-0 flex-col gap-0.5">
+                <div className="flex min-w-0 flex-col gap-0.5 sm:gap-1">
                   <Label htmlFor={optionId} size={labelSize} className={cn(optionDisabled && "cursor-not-allowed opacity-70")}>
                     {option.label}
                   </Label>
                   {option.hint ? (
-                    <p className={cn("text-muted-foreground", size === "sm" ? "text-[11px]" : "text-xs")}>
+                    <p
+                      className={cn(
+                        "leading-snug text-muted-foreground",
+                        size === "sm" ? "text-[10px] sm:text-[11px]" : "text-[10px] sm:text-xs",
+                      )}
+                    >
                       {option.hint}
                     </p>
                   ) : null}
@@ -162,11 +167,17 @@ const RadioGroup = React.forwardRef<
         </RadioGroupPrimitive.Root>
 
         {error ? (
-          <p id={errorId} className="text-xs text-destructive">
+          <p id={errorId} className="text-[10px] leading-snug text-destructive sm:text-xs">
             {error}
           </p>
         ) : hint ? (
-          <p id={hintId} className={cn("text-muted-foreground", size === "sm" ? "text-[11px]" : "text-xs")}>
+          <p
+            id={hintId}
+            className={cn(
+              "leading-snug text-muted-foreground",
+              size === "sm" ? "text-[10px] sm:text-[11px]" : "text-[10px] sm:text-xs",
+            )}
+          >
             {hint}
           </p>
         ) : null}

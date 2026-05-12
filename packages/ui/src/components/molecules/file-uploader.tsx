@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { CloseIcon, DownloadIcon, FileDocumentIcon } from "../../icons";
+import { cn } from "../../lib/utils";
 
 type FileUploaderStatus = "default" | "error" | "success";
 
@@ -21,10 +22,6 @@ export type FileUploaderProps = {
   allowedExtensions?: string[];
   onFileChange?: (file: File | null) => void;
 };
-
-function cx(...classes: Array<string | false | null | undefined>): string {
-  return classes.filter(Boolean).join(" ");
-}
 
 function normalizeExtensions(input?: string[]): Set<string> | null {
   if (!input || input.length === 0) return null;
@@ -257,16 +254,16 @@ const FileUploader = React.forwardRef<HTMLInputElement, FileUploaderProps>(
           : "border-slate-300 bg-transparent hover:border-sky-300 hover:bg-slate-50/60";
 
     return (
-      <div className={cx("w-full space-y-2", className)}>
+      <div className={cn("w-full space-y-1.5 sm:space-y-2", className)}>
         <div className="flex items-center justify-between">
-          <label htmlFor={inputId} className="text-xs font-medium text-slate-900">
+          <label htmlFor={inputId} className="text-[11px] font-medium text-slate-900 sm:text-xs">
             {label}
-            {required ? <span className="ml-1 text-red-500">*</span> : null}
+            {required ? <span className="ms-1 text-red-500">*</span> : null}
           </label>
         </div>
 
         {description ? (
-          <p id={descriptionId} className="text-[11px] text-slate-500/90">
+          <p id={descriptionId} className="text-[10px] text-slate-500/90 sm:text-[11px]">
             {description}
           </p>
         ) : null}
@@ -284,7 +281,7 @@ const FileUploader = React.forwardRef<HTMLInputElement, FileUploaderProps>(
           aria-describedby={describedBy || undefined}
         />
 
-        <div className="space-y-2">
+        <div className="space-y-1.5 sm:space-y-2">
           {!selectedFile ? (
             <>
               <div
@@ -297,34 +294,36 @@ const FileUploader = React.forwardRef<HTMLInputElement, FileUploaderProps>(
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={cx(
-                  "flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed transition-colors",
+                className={cn(
+                  "flex h-20 w-20 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-md border border-dashed transition-colors sm:h-24 sm:w-24 sm:gap-1 sm:rounded-lg",
                   "focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400",
                   "cursor-pointer",
                   dropAreaStateClass,
                   disabled && "cursor-not-allowed opacity-60",
                 )}
               >
-                <span className="text-lg leading-none text-slate-500">+</span>
-                <span className="text-xs text-slate-700">Upload</span>
+                <span className="text-base leading-none text-slate-500 sm:text-lg">+</span>
+                <span className="text-[11px] text-slate-700 sm:text-xs">Upload</span>
               </div>
 
-              <div className="space-y-1 border-t border-slate-200 pt-2">
-                <p className="text-xs font-semibold text-slate-800">Avatar</p>
-                <p className="text-xs text-slate-700">Click to upload user&apos;s avatar, and validate size and format.</p>
-                <p className="text-[11px] text-slate-500">{placeholder}</p>
+              <div className="space-y-0.5 border-t border-slate-200 pt-1.5 sm:space-y-1 sm:pt-2">
+                <p className="text-[11px] font-semibold text-slate-800 sm:text-xs">Avatar</p>
+                <p className="text-[11px] text-slate-700 sm:text-xs">
+                  Click to upload user&apos;s avatar, and validate size and format.
+                </p>
+                <p className="text-[10px] text-slate-500 sm:text-[11px]">{placeholder}</p>
               </div>
             </>
           ) : (
-            <div className="space-y-2">
-              <div className="flex items-start gap-2">
+            <div className="space-y-1.5 sm:space-y-2">
+              <div className="flex items-start gap-1.5 sm:gap-2">
                 <div
                   onClick={() => {
                     if (isImage && previewUrl && !disabled) setIsPreviewOpen(true);
                   }}
-                  className={cx(
-                    "group relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-slate-300 bg-white",
-                    isImage && previewUrl && !disabled ? "cursor-zoom-in" : "",
+                  className={cn(
+                    "group relative h-20 w-20 shrink-0 overflow-hidden rounded-md border border-slate-300 bg-white sm:h-24 sm:w-24 sm:rounded-lg",
+                    isImage && previewUrl && !disabled ? "cursor-zoom-in touch-manipulation" : "",
                   )}
                 >
                   {isImage && previewUrl ? (
@@ -340,13 +339,13 @@ const FileUploader = React.forwardRef<HTMLInputElement, FileUploaderProps>(
                     onClick={handleDownload}
                     disabled={disabled}
                     aria-label="Download file"
-                    className={cx(
-                      "absolute left-1 bottom-1 inline-flex h-5 w-5 items-center justify-center rounded-full",
-                      "bg-black/55 text-white opacity-0 transition group-hover:opacity-100",
+                    className={cn(
+                      "absolute bottom-1 inset-s-1 inline-flex size-8 touch-manipulation items-center justify-center rounded-full sm:size-5",
+                      "bg-black/55 text-white opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100",
                       "cursor-pointer focus:opacity-100 disabled:cursor-not-allowed disabled:opacity-40",
                     )}
                   >
-                    <DownloadIcon />
+                    <DownloadIcon className="size-3.5 sm:size-3" />
                   </button>
 
                   <button
@@ -354,13 +353,13 @@ const FileUploader = React.forwardRef<HTMLInputElement, FileUploaderProps>(
                     onClick={handleRemove}
                     disabled={disabled}
                     aria-label="Remove file"
-                    className={cx(
-                      "absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full",
-                      "bg-black/55 text-white opacity-0 transition group-hover:opacity-100",
+                    className={cn(
+                      "absolute inset-e-1 top-1 inline-flex size-8 touch-manipulation items-center justify-center rounded-full sm:size-5",
+                      "bg-black/55 text-white opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100",
                       "cursor-pointer focus:opacity-100 disabled:cursor-not-allowed disabled:opacity-40",
                     )}
                   >
-                    <CloseIcon className="h-3 w-3" />
+                    <CloseIcon className="size-3.5 sm:size-3" />
                   </button>
                 </div>
               </div>
@@ -369,29 +368,29 @@ const FileUploader = React.forwardRef<HTMLInputElement, FileUploaderProps>(
         </div>
 
         {error ? (
-          <p id={errorId} className="text-xs text-red-600" role="alert">
+          <p id={errorId} className="text-[11px] text-red-600 sm:text-xs" role="alert">
             {error}
           </p>
         ) : status === "success" ? (
-          <p id={statusId} className="text-xs text-emerald-600">
+          <p id={statusId} className="text-[11px] text-emerald-600 sm:text-xs">
             {isImage ? "Upload ready." : "Preview not available for this file type."}
           </p>
         ) : (
-          <p id={statusId} className="text-xs text-slate-500">
+          <p id={statusId} className="text-[11px] text-slate-500 sm:text-xs">
             No file selected.
           </p>
         )}
 
         {isPreviewOpen && isImage && previewUrl ? (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+            className="fixed inset-0 z-50 flex touch-manipulation items-center justify-center bg-black/70 p-3 sm:p-4"
             role="dialog"
             aria-modal="true"
             aria-label="Image preview"
             onClick={() => setIsPreviewOpen(false)}
           >
             <div
-              className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-lg bg-white p-2"
+              className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-md bg-white p-1.5 sm:rounded-lg sm:p-2"
               onClick={(event) => event.stopPropagation()}
             >
               <img src={previewUrl} alt={selectedFile?.name ?? "Preview"} className="max-h-[85vh] max-w-[85vw] object-contain" />
@@ -399,9 +398,9 @@ const FileUploader = React.forwardRef<HTMLInputElement, FileUploaderProps>(
                 type="button"
                 onClick={() => setIsPreviewOpen(false)}
                 aria-label="Close preview"
-                className="absolute right-2 top-2 inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
+                className="absolute inset-e-2 top-2 inline-flex size-8 cursor-pointer touch-manipulation items-center justify-center rounded-full bg-black/70 text-white hover:bg-black sm:size-7"
               >
-                <CloseIcon className="h-3 w-3" />
+                <CloseIcon className="size-3.5 sm:size-3" />
               </button>
             </div>
           </div>

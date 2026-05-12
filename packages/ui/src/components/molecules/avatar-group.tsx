@@ -25,21 +25,32 @@ function AvatarGroup({ className, items, max = 5, size = "default", totalCount, 
   const hiddenCount = Math.max(0, (totalCount ?? items.length) - visibleItems.length);
 
   return (
-    <div className={cn("flex items-center -space-x-3 rtl:space-x-reverse", className)} {...props}>
+    <div
+      className={cn(
+        "relative flex touch-manipulation items-center -space-x-2 sm:-space-x-3 rtl:space-x-reverse",
+        className,
+      )}
+      {...props}
+    >
       {visibleItems.map((item, index) => (
         <Avatar
           key={item.id ?? `${item.name ?? "avatar"}-${index}`}
           size={size}
           name={item.name}
-          className="ring-2 ring-background"
+          className="relative ring-1 ring-background sm:ring-2"
+          style={{ zIndex: index }}
         >
           {item.src ? <AvatarImage src={item.src} alt={item.alt ?? item.name ?? "avatar"} /> : null}
         </Avatar>
       ))}
 
       {hiddenCount > 0 ? (
-        <Avatar size={size} className="bg-muted text-muted-foreground ring-2 ring-background">
-          <span className="text-[0.75em] font-medium">+{hiddenCount}</span>
+        <Avatar
+          size={size}
+          className="relative bg-muted text-muted-foreground ring-1 ring-background sm:ring-2"
+          style={{ zIndex: visibleItems.length }}
+        >
+          <span className="text-[0.65rem] font-medium sm:text-[0.75em]">+{hiddenCount}</span>
         </Avatar>
       ) : null}
     </div>

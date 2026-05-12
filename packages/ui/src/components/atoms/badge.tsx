@@ -7,7 +7,7 @@ import { cn } from "../../lib/utils";
 
 const badgeVariants = cva(
   [
-    "inline-flex items-center justify-center rounded-full border font-medium",
+    "inline-flex items-center justify-center rounded-full border font-medium touch-manipulation",
     "transition-[color,background-color,border-color,opacity]",
     "whitespace-nowrap",
   ].join(" "),
@@ -23,9 +23,10 @@ const badgeVariants = cva(
         info: "border-transparent bg-sky-600/15 text-sky-700 dark:text-sky-400",
       },
       size: {
-        sm: "h-5 px-2 text-[11px]",
-        default: "h-6 px-2.5 text-xs",
-        lg: "h-7 px-3 text-sm",
+        sm: "h-4 min-h-4 px-1.5 text-[10px] leading-none sm:h-5 sm:min-h-5 sm:px-2 sm:text-[11px]",
+        default:
+          "h-5 min-h-5 px-2 text-[10px] leading-none sm:h-6 sm:min-h-6 sm:px-2.5 sm:text-xs",
+        lg: "h-6 min-h-6 px-2.5 text-xs leading-none sm:h-7 sm:min-h-7 sm:px-3 sm:text-sm",
       },
     },
     defaultVariants: {

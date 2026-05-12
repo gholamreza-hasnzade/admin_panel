@@ -19,10 +19,10 @@ function Skeleton({
     <div
       className={cn(
         "bg-muted",
-        shimmer && "animate-pulse",
+        shimmer && "motion-safe:animate-pulse motion-reduce:animate-none",
         rounded === "sm" && "rounded-sm",
-        rounded === "md" && "rounded-md",
-        rounded === "lg" && "rounded-lg",
+        rounded === "md" && "rounded-sm sm:rounded-md",
+        rounded === "lg" && "rounded-md sm:rounded-lg",
         rounded === "full" && "rounded-full",
         className,
       )}

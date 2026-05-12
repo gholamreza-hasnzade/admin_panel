@@ -10,7 +10,7 @@ import { Label } from "./label";
 
 const checkboxVariants = cva(
   [
-    "peer shrink-0 rounded-sm border transition-[color,box-shadow,border-color,background-color,opacity]",
+    "peer shrink-0 touch-manipulation rounded-sm border transition-[color,box-shadow,border-color,background-color,opacity]",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "disabled:cursor-not-allowed disabled:opacity-50",
     "hover:border-ring/70",
@@ -20,9 +20,9 @@ const checkboxVariants = cva(
   {
     variants: {
       size: {
-        sm: "size-3.5",
-        default: "size-4",
-        lg: "size-5",
+        sm: "size-3 sm:size-3.5",
+        default: "size-3.5 sm:size-4",
+        lg: "size-4 sm:size-5",
       },
       state: {
         default: "border-input bg-background",
@@ -76,11 +76,16 @@ const Checkbox = React.forwardRef<
     const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
     const fieldState = error ? "error" : state ?? "default";
     const labelSize = size === "sm" ? "sm" : "default";
-    const indicatorSizeClass = size === "lg" ? "size-4" : "size-3.5";
+    const checkIconClass =
+      size === "lg"
+        ? "size-3.5 sm:size-4"
+        : size === "sm"
+          ? "size-2.5 sm:size-3"
+          : "size-3 sm:size-3.5";
 
     return (
-      <div className={cn("flex w-full flex-col gap-1.5", containerClassName)}>
-        <div className="flex items-start gap-2.5">
+      <div className={cn("flex w-full flex-col gap-1 sm:gap-1.5", containerClassName)}>
+        <div className="flex items-start gap-2 sm:gap-2.5">
           <CheckboxPrimitive.Root
             ref={ref}
             id={checkboxId}
@@ -91,7 +96,7 @@ const Checkbox = React.forwardRef<
             {...props}
           >
             <CheckboxPrimitive.Indicator className="flex items-center justify-center">
-              <CheckIcon className={indicatorSizeClass} />
+              <CheckIcon className={checkIconClass} />
             </CheckboxPrimitive.Indicator>
           </CheckboxPrimitive.Root>
 
@@ -108,11 +113,17 @@ const Checkbox = React.forwardRef<
         </div>
 
         {error ? (
-          <p id={errorId} className="text-xs text-destructive">
+          <p id={errorId} className="text-[10px] leading-snug text-destructive sm:text-xs">
             {error}
           </p>
         ) : hint ? (
-          <p id={hintId} className={cn("text-muted-foreground", size === "sm" ? "text-[11px]" : "text-xs")}>
+          <p
+            id={hintId}
+            className={cn(
+              "leading-snug text-muted-foreground",
+              size === "sm" ? "text-[10px] sm:text-[11px]" : "text-[10px] sm:text-xs",
+            )}
+          >
             {hint}
           </p>
         ) : null}

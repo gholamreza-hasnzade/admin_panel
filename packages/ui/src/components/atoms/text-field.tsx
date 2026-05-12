@@ -9,9 +9,9 @@ import { Label } from "./label";
 
 const textFieldVariants = cva(
   [
-    "group flex w-full min-w-0 items-center gap-2 rounded-md border px-3",
+    "group flex w-full min-w-0 touch-manipulation items-center gap-1.5 rounded-md border px-2.5",
     "transition-[color,box-shadow,border-color,background-color,opacity]",
-    "focus-within:ring-[3px]",
+    "focus-within:ring-[3px] sm:gap-2 sm:px-3",
   ].join(" "),
   {
     variants: {
@@ -24,11 +24,10 @@ const textFieldVariants = cva(
           "border-transparent bg-transparent text-foreground hover:border-border hover:bg-background/30 focus-within:border-ring focus-within:bg-background/50 focus-within:ring-ring/20",
       },
       size: {
-        sm: "h-9 px-2.5 text-xs",
-        default: "h-10 text-sm",
-        lg: "h-11 px-4 text-base",
-      },
-      state: {
+        sm: "h-8 px-2 text-[11px] sm:h-9 sm:px-2.5 sm:text-xs",
+        default: "h-9 text-xs sm:h-10 sm:text-sm",
+        lg: "h-10 px-3 text-sm sm:h-11 sm:px-4 sm:text-base",
+      },      state: {
         default: "",
         error:
           "border-destructive hover:border-destructive focus-within:border-destructive focus-within:ring-destructive/30",
@@ -127,6 +126,9 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     const localRef = React.useRef<HTMLInputElement>(null);
     const mergedRef = useComposedRefs(ref, localRef);
     const hasValue = value != null ? `${value}`.length > 0 : `${defaultValue ?? ""}`.length > 0;
+    const labelSize = size === "sm" ? "sm" : "default";
+    const actionBtnClass =
+      "touch-manipulation inline-flex size-8 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:size-auto sm:min-h-0 sm:min-w-0";
 
     const handleClear = () => {
       const inputEl = localRef.current;
@@ -142,9 +144,9 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     };
 
     return (
-      <div className={cn("flex w-full flex-col gap-1.5", className)}>
+      <div className={cn("flex w-full flex-col gap-1 sm:gap-1.5", className)}>
         {label ? (
-          <Label htmlFor={inputId}>
+          <Label htmlFor={inputId} size={labelSize}>
             {label}
             {required ? (
               <span className="ms-1 font-semibold text-red-600 dark:text-red-400" aria-hidden>
@@ -168,7 +170,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           data-readonly={isReadOnly ? "true" : "false"}
         >
           {startIcon ? (
-            <span className="inline-flex shrink-0 items-center justify-center text-muted-foreground transition-colors group-focus-within:text-foreground">
+            <span className="inline-flex shrink-0 items-center justify-center text-muted-foreground transition-colors group-focus-within:text-foreground [&_svg]:size-3.5 sm:[&_svg]:size-4">
               {startIcon}
             </span>
           ) : null}
@@ -197,12 +199,12 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           />
 
           {loading ? (
-            <SpinnerIcon className="shrink-0 text-muted-foreground" />
+            <SpinnerIcon className="size-3.5 shrink-0 text-muted-foreground sm:size-4" />
           ) : clearable && hasValue && !isDisabled && !isReadOnly ? (
             <button
               type="button"
               onClick={handleClear}
-              className="inline-flex shrink-0 items-center rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className={cn(actionBtnClass, "text-lg leading-none")}
               aria-label="Clear input"
             >
               ×
@@ -213,7 +215,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="inline-flex shrink-0 items-center rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className={cn(actionBtnClass, "[&_svg]:size-4 sm:[&_svg]:size-[1.125rem]")}
               aria-label={showPassword ? "Hide password" : "Show password"}
               disabled={isDisabled}
             >
@@ -225,18 +227,18 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
             <span className="inline-flex shrink-0 items-center text-muted-foreground">{suffix}</span>
           ) : null}
           {endIcon ? (
-            <span className="inline-flex shrink-0 items-center justify-center text-muted-foreground">
+            <span className="inline-flex shrink-0 items-center justify-center text-muted-foreground [&_svg]:size-3.5 sm:[&_svg]:size-4">
               {endIcon}
             </span>
           ) : null}
         </div>
 
         {error ? (
-          <p id={errorId} className="text-xs text-destructive">
+          <p id={errorId} className="text-[10px] leading-snug text-destructive sm:text-xs">
             {error}
           </p>
         ) : hint ? (
-          <p id={hintId} className="text-xs text-muted-foreground">
+          <p id={hintId} className="text-[10px] leading-snug text-muted-foreground sm:text-xs">
             {hint}
           </p>
         ) : null}

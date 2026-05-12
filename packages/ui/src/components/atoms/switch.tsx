@@ -9,16 +9,16 @@ import { Label } from "./label";
 
 const switchVariants = cva(
   [
-    "peer group relative inline-flex shrink-0 cursor-pointer items-center rounded-full border transition-[color,box-shadow,border-color,background-color,opacity]",
+    "peer group relative inline-flex shrink-0 touch-manipulation cursor-pointer items-center rounded-full border transition-[color,box-shadow,border-color,background-color,opacity]",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "disabled:cursor-not-allowed disabled:opacity-50",
   ].join(" "),
   {
     variants: {
       size: {
-        sm: "h-5 w-9",
-        default: "h-6 w-11",
-        lg: "h-7 w-12",
+        sm: "h-4 w-8 sm:h-5 sm:w-9",
+        default: "h-5 w-10 sm:h-6 sm:w-11",
+        lg: "h-6 w-11 sm:h-7 sm:w-12",
       },
       state: {
         default: "border-input bg-muted data-[state=checked]:border-primary data-[state=checked]:bg-primary",
@@ -40,9 +40,12 @@ const switchVariants = cva(
 const switchThumbVariants = cva("block rounded-full bg-white shadow-sm transition-transform", {
   variants: {
     size: {
-      sm: "size-4 data-[state=checked]:-translate-x-4 data-[state=unchecked]:-translate-x-0.5",
-      default: "size-5 data-[state=checked]:-translate-x-5 data-[state=unchecked]:-translate-x-0.5",
-      lg: "size-6 data-[state=checked]:-translate-x-5 data-[state=unchecked]:-translate-x-0.5",
+      sm:
+        "size-3.5 data-[state=checked]:-translate-x-3.5 data-[state=unchecked]:-translate-x-0.5 sm:size-4 sm:data-[state=checked]:-translate-x-4",
+      default:
+        "size-4 data-[state=checked]:-translate-x-4 data-[state=unchecked]:-translate-x-0.5 sm:size-5 sm:data-[state=checked]:-translate-x-5",
+      lg:
+        "size-5 data-[state=checked]:-translate-x-4 data-[state=unchecked]:-translate-x-0.5 sm:size-6 sm:data-[state=checked]:-translate-x-5",
     },
   },
   defaultVariants: {
@@ -84,8 +87,8 @@ const Switch = React.forwardRef<React.ComponentRef<typeof SwitchPrimitive.Root>,
     const labelSize = size === "sm" ? "sm" : "default";
 
     return (
-      <div className={cn("flex w-full flex-col gap-1.5", containerClassName)}>
-        <div className="flex items-start justify-between gap-3">
+      <div className={cn("flex w-full flex-col gap-1 sm:gap-1.5", containerClassName)}>
+        <div className="flex items-start justify-between gap-2 sm:gap-3">
           <div className="flex min-w-0 flex-col gap-0.5 text-right">
             {label ? (
               <Label htmlFor={switchId} size={labelSize} className={cn(disabled && "cursor-not-allowed opacity-70")}>
@@ -98,7 +101,13 @@ const Switch = React.forwardRef<React.ComponentRef<typeof SwitchPrimitive.Root>,
               </Label>
             ) : null}
             {!error && hint ? (
-              <p id={hintId} className={cn("text-muted-foreground", size === "sm" ? "text-[11px]" : "text-xs")}>
+              <p
+                id={hintId}
+                className={cn(
+                  "leading-snug text-muted-foreground",
+                  size === "sm" ? "text-[10px] sm:text-[11px]" : "text-[10px] sm:text-xs",
+                )}
+              >
                 {hint}
               </p>
             ) : null}
@@ -119,7 +128,7 @@ const Switch = React.forwardRef<React.ComponentRef<typeof SwitchPrimitive.Root>,
         </div>
 
         {error ? (
-          <p id={errorId} className="text-xs text-destructive">
+          <p id={errorId} className="text-[10px] leading-snug text-destructive sm:text-xs">
             {error}
           </p>
         ) : null}

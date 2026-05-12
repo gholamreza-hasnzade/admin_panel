@@ -10,11 +10,11 @@ import { cn } from "../../lib/utils";
 const buttonVariants = cva(
   [
     "relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium",
-    "cursor-pointer",
+    "touch-manipulation cursor-pointer",
     "transition-[color,background-color,border-color,box-shadow,opacity]",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "disabled:cursor-not-allowed disabled:opacity-50",
-    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5 sm:[&_svg:not([class*='size-'])]:size-4",
   ].join(" "),
   {
     variants: {
@@ -34,17 +34,22 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline shadow-none",
       },
       size: {
-        default: "h-10 px-4 py-2 has-[>[data-slot=icon-start]]:ps-3 has-[>[data-slot=icon-end]]:pe-3",
-        sm: "h-9 gap-1.5 rounded-md px-3 text-xs has-[>[data-slot=icon-start]]:ps-2.5 has-[>[data-slot=icon-end]]:pe-2.5 [&_svg:not([class*='size-'])]:size-3.5",
-        lg: "h-11 rounded-md px-8 text-base has-[>[data-slot=icon-start]]:ps-6 has-[>[data-slot=icon-end]]:pe-6",
-        icon: "size-10 gap-0 p-0 [&_svg:not([class*='size-'])]:size-4",
+        default:
+          "h-9 min-h-9 px-3.5 py-1.5 text-xs has-[>[data-slot=icon-start]]:ps-2.5 has-[>[data-slot=icon-end]]:pe-2.5 sm:h-10 sm:min-h-10 sm:px-4 sm:py-2 sm:text-sm sm:has-[>[data-slot=icon-start]]:ps-3 sm:has-[>[data-slot=icon-end]]:pe-3",
+        sm:
+          "h-8 min-h-8 gap-1 rounded-md px-2.5 text-[11px] has-[>[data-slot=icon-start]]:ps-2 has-[>[data-slot=icon-end]]:pe-2 sm:h-9 sm:min-h-9 sm:gap-1.5 sm:px-3 sm:text-xs sm:has-[>[data-slot=icon-start]]:ps-2.5 sm:has-[>[data-slot=icon-end]]:pe-2.5",
+        lg:
+          "h-10 min-h-10 rounded-md px-5 text-sm has-[>[data-slot=icon-start]]:ps-4 has-[>[data-slot=icon-end]]:pe-4 sm:h-11 sm:min-h-11 sm:px-8 sm:text-base sm:has-[>[data-slot=icon-start]]:ps-6 sm:has-[>[data-slot=icon-end]]:pe-6",
+        icon:
+          "size-9 min-h-9 min-w-9 gap-0 p-0 [&_svg:not([class*='size-'])]:size-3.5 sm:size-10 sm:min-h-10 sm:min-w-10 sm:[&_svg:not([class*='size-'])]:size-4",
       },
     },
     compoundVariants: [
       {
         variant: "link",
         size: ["default", "sm", "lg"],
-        class: "h-auto min-h-0 px-0 py-0 has-[>[data-slot=icon-start]]:ps-0 has-[>[data-slot=icon-end]]:pe-0",
+        class:
+          "h-auto min-h-0 px-0 py-0 has-[>[data-slot=icon-start]]:ps-0 has-[>[data-slot=icon-end]]:pe-0",
       },
     ],
     defaultVariants: {

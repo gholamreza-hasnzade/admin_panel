@@ -139,7 +139,7 @@ export function PersianDateTimeField({
   }, [isControlled, defaultValue, outputFormat]);
 
   return (
-    <div className={cn("flex w-full flex-col gap-1.5", className)}>
+    <div className={cn("flex w-full flex-col gap-1 sm:gap-1.5", className)}>
       {label ? (
         <Label htmlFor={fieldId}>
           {label}
@@ -154,7 +154,6 @@ export function PersianDateTimeField({
       <div
         className={cn(
           textFieldVariants({ variant: "outline", size: "default", state: fieldState }),
-          "px-1.5",
           isDisabled && "cursor-not-allowed border-input bg-muted/50 opacity-70 hover:border-input",
           isReadOnly &&
             !isDisabled &&
@@ -183,8 +182,8 @@ export function PersianDateTimeField({
           maxDate={maxDate}
           containerClassName="w-full"
           inputClass={cn(
-            "h-9 w-full min-w-0 border-0 bg-transparent py-1 text-start text-sm text-foreground outline-none ring-0",
-            "placeholder:text-muted-foreground",
+            "h-9 w-full min-w-0 border-0 bg-transparent py-1 text-start text-xs text-foreground outline-none ring-0",
+            "placeholder:text-muted-foreground sm:h-10 sm:text-sm",
             inputClass,
           )}
           plugins={[timePlugin]}
@@ -193,14 +192,13 @@ export function PersianDateTimeField({
         />
       </div>
 
-      {!error && hint ? (
-        <p id={hintId} className="text-xs text-muted-foreground">
-          {hint}
-        </p>
-      ) : null}
       {error ? (
-        <p id={errorId} className="text-xs text-destructive">
+        <p id={errorId} className="text-[10px] leading-snug text-destructive sm:text-xs">
           {error}
+        </p>
+      ) : hint ? (
+        <p id={hintId} className="text-[10px] leading-snug text-muted-foreground sm:text-xs">
+          {hint}
         </p>
       ) : null}
     </div>

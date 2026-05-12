@@ -76,7 +76,14 @@ function Pagination({
   if (safeTotal <= 1) return null;
 
   return (
-    <nav dir="rtl" aria-label="Pagination" className={cn("flex items-center justify-center gap-1.5", className)}>
+    <nav
+      dir="rtl"
+      aria-label="Pagination"
+      className={cn(
+        "flex min-w-0 flex-wrap items-center justify-center gap-1 touch-manipulation sm:gap-1.5",
+        className,
+      )}
+    >
       <Button
         size="sm"
         variant="outline"
@@ -88,8 +95,12 @@ function Pagination({
 
       {items.map((item, idx) =>
         item === "ellipsis" ? (
-          <span key={`ellipsis-${idx}`} className="px-1 text-sm text-muted-foreground">
-            ...
+          <span
+            key={`ellipsis-${idx}`}
+            className="shrink-0 select-none px-0.5 text-[11px] text-muted-foreground sm:px-1 sm:text-sm"
+            aria-hidden
+          >
+            …
           </span>
         ) : (
           <Button
@@ -99,6 +110,7 @@ function Pagination({
             onClick={() => onPageChange(item)}
             disabled={disabled}
             aria-current={item === currentPage ? "page" : undefined}
+            className="tabular-nums"
           >
             {item}
           </Button>

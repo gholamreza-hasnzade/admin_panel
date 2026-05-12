@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { CloseIcon, DownloadIcon } from "../../icons";
+import { cn } from "../../lib/utils";
 
 type FileUploadStatus = "default" | "error" | "success";
 
@@ -28,10 +29,6 @@ type PreviewItem = {
   isImage: boolean;
   previewUrl: string | null;
 };
-
-function cn(...classes: Array<string | false | null | undefined>): string {
-  return classes.filter(Boolean).join(" ");
-}
 
 function fileKey(file: File): string {
   return `${file.name}-${file.size}-${file.lastModified}`;
@@ -330,15 +327,15 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
           : "border-slate-200 bg-transparent";
 
     return (
-      <div className={cn("w-full space-y-2", className)}>
-        <div className="flex items-center justify-between gap-3">
-          <label htmlFor={inputId} className="text-xs font-semibold text-slate-800">
+      <div className={cn("w-full space-y-1.5 sm:space-y-2", className)}>
+        <div className="flex items-center justify-between gap-2 sm:gap-3">
+          <label htmlFor={inputId} className="text-[11px] font-semibold text-slate-800 sm:text-xs">
             {label}
           </label>
           {typeof maxFiles === "number" ? (
             <span
               className={cn(
-                "rounded-md px-1.5 py-0.5 text-[11px]",
+                "rounded-md px-1 py-0.5 text-[10px] sm:px-1.5 sm:py-0.5 sm:text-[11px]",
                 maxReached ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600",
               )}
             >
@@ -348,7 +345,7 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
         </div>
 
         {hint ? (
-          <p id={hintId} className="text-[11px] text-slate-500/90">
+          <p id={hintId} className="text-[10px] text-slate-500/90 sm:text-[11px]">
             {hint}
           </p>
         ) : null}
@@ -374,14 +371,17 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            "rounded-lg border border-dashed p-2 transition-colors",
+            "touch-manipulation rounded-md border border-dashed p-1.5 transition-colors sm:rounded-lg sm:p-2",
             dropWrapperStateClass,
             (disabled || maxReached) && "opacity-70",
           )}
         >
-          <ul className="flex flex-wrap gap-2">
+          <ul className="flex flex-wrap gap-1.5 sm:gap-2">
             {previews.map(({ file, key, isImage, previewUrl }) => (
-              <li key={key} className="group relative h-24 w-24 overflow-hidden rounded-md border border-slate-300 bg-white">
+              <li
+                key={key}
+                className="group relative h-20 w-20 overflow-hidden rounded border border-slate-300 bg-white sm:h-24 sm:w-24 sm:rounded-md"
+              >
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
@@ -389,14 +389,17 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
                       setPreviewModal({ url: previewUrl, name: file.name, key });
                     }
                   }}
-                  className={cn("h-full w-full", isImage && previewUrl && !disabled && "cursor-zoom-in")}
+                  className={cn(
+                    "h-full w-full",
+                    isImage && previewUrl && !disabled && "cursor-zoom-in touch-manipulation",
+                  )}
                 >
                   {isImage && previewUrl ? (
                     <img src={previewUrl} alt={file.name} className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center px-1 text-center text-slate-500">
-                      <span className="text-base">📄</span>
-                      <span className="mt-1 line-clamp-1 text-[10px]">{file.name}</span>
+                    <div className="flex h-full w-full flex-col items-center justify-center px-0.5 text-center text-slate-500 sm:px-1">
+                      <span className="text-sm sm:text-base">📄</span>
+                      <span className="mt-0.5 line-clamp-1 text-[9px] sm:mt-1 sm:text-[10px]">{file.name}</span>
                     </div>
                   )}
                 </div>
@@ -406,9 +409,12 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
                   disabled={disabled}
                   onClick={(e) => handleDownloadFile(file, e)}
                   aria-label={`Download ${file.name}`}
-                  className="absolute left-1 bottom-1 inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  className={cn(
+                    "absolute bottom-1 inset-s-1 inline-flex size-8 touch-manipulation items-center justify-center rounded-full bg-black/55 text-white opacity-100 transition sm:size-5 sm:opacity-0 sm:group-hover:opacity-100",
+                    "cursor-pointer focus:opacity-100 disabled:cursor-not-allowed disabled:opacity-40",
+                  )}
                 >
-                  <DownloadIcon />
+                  <DownloadIcon className="size-3.5 sm:size-3" />
                 </button>
 
                 <button
@@ -419,12 +425,15 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
                     handleRemoveFile(key);
                   }}
                   aria-label={`Remove ${file.name}`}
-                  className="absolute right-1 top-1 inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  className={cn(
+                    "absolute inset-e-1 top-1 inline-flex size-8 touch-manipulation items-center justify-center rounded-full bg-black/55 text-white opacity-100 transition sm:size-5 sm:opacity-0 sm:group-hover:opacity-100",
+                    "cursor-pointer focus:opacity-100 disabled:cursor-not-allowed disabled:opacity-40",
+                  )}
                 >
-                  <CloseIcon />
+                  <CloseIcon className="size-3.5 sm:size-3" />
                 </button>
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/45 px-1 py-0.5 text-[10px] text-white">
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/45 px-0.5 py-0.5 text-[9px] text-white sm:px-1 sm:text-[10px]">
                   <p className="truncate">{formatFileSize(file.size)}</p>
                 </div>
               </li>
@@ -439,14 +448,14 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
                   onKeyDown={handleZoneKeyDown}
                   aria-label="Select files"
                   className={cn(
-                    "flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-md border border-dashed border-slate-300 bg-white text-slate-600 transition",
+                    "flex h-20 w-20 touch-manipulation flex-col items-center justify-center gap-0.5 rounded border border-dashed border-slate-300 bg-white text-slate-600 transition sm:h-24 sm:w-24 sm:gap-1 sm:rounded-md",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400",
                     "hover:border-sky-400 hover:text-sky-600",
-                    disabled && "cursor-not-allowed opacity-50",
+                    disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
                   )}
                 >
-                  <span className="text-lg leading-none">+</span>
-                  <span className="text-xs">Upload</span>
+                  <span className="text-base leading-none sm:text-lg">+</span>
+                  <span className="text-[11px] sm:text-xs">Upload</span>
                 </div>
               </li>
             ) : null}
@@ -455,18 +464,18 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
 
         {errors.length > 0 ? (
           <div id={errorId} role="alert">
-            <ul className="space-y-1 rounded-md bg-red-50 px-2 py-1 text-xs text-red-700">
+            <ul className="space-y-0.5 rounded-md bg-red-50 px-1.5 py-1 text-[11px] text-red-700 sm:space-y-1 sm:px-2 sm:text-xs">
               {errors.map((err, idx) => (
                 <li key={`${err}-${idx}`}>- {err}</li>
               ))}
             </ul>
           </div>
         ) : maxReached ? (
-          <p id={statusId} className="text-xs text-amber-700">
+          <p id={statusId} className="text-[11px] text-amber-700 sm:text-xs">
             Maximum {maxFiles} files selected.
           </p>
         ) : (
-          <p id={statusId} className="text-xs text-slate-500">
+          <p id={statusId} className="text-[11px] text-slate-500 sm:text-xs">
             {files.length > 0
               ? `${files.length} file(s) selected.${files.some((f) => !f.type.startsWith("image/")) ? " Some files are not previewable." : ""}`
               : placeholder}
@@ -475,14 +484,14 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
 
         {previewModal ? (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+            className="fixed inset-0 z-50 flex touch-manipulation items-center justify-center bg-black/70 p-3 sm:p-4"
             role="dialog"
             aria-modal="true"
             aria-label="Image preview"
             onClick={() => setPreviewModal(null)}
           >
             <div
-              className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-lg bg-white p-2"
+              className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-md bg-white p-1.5 sm:rounded-lg sm:p-2"
               onClick={(event) => event.stopPropagation()}
             >
               <img src={previewModal.url} alt={previewModal.name} className="max-h-[85vh] max-w-[85vw] object-contain" />
@@ -490,9 +499,9 @@ const MultiFileUploader = React.forwardRef<HTMLInputElement, MultiFileUploaderPr
                 type="button"
                 onClick={() => setPreviewModal(null)}
                 aria-label="Close preview"
-                className="absolute right-2 top-2 inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
+                className="absolute inset-e-2 top-2 inline-flex size-8 cursor-pointer touch-manipulation items-center justify-center rounded-full bg-black/70 text-white hover:bg-black sm:size-7"
               >
-                <CloseIcon />
+                <CloseIcon className="size-3.5 sm:size-3" />
               </button>
             </div>
           </div>
