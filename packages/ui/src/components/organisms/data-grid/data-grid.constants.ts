@@ -1,3 +1,21 @@
+/** React Query key segment shared by `DataGrid` and callers that invalidate grid caches. */
+export const DATA_GRID_ROOT_QUERY_KEY = "data-grid" as const;
+
+export function getDataGridQueryKey(args: {
+  url: string;
+  requestParamsKey: string;
+  dataPath: string;
+  totalPath: string;
+}) {
+  return [
+    DATA_GRID_ROOT_QUERY_KEY,
+    args.url,
+    args.requestParamsKey,
+    args.dataPath,
+    args.totalPath,
+  ] as const;
+}
+
 export const GRID_CLASS = {
   shell:
     "w-full space-y-4 rounded-xl border border-border/90 bg-card p-3 shadow-sm md:p-4",

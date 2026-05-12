@@ -4,16 +4,16 @@ import type { Header } from "@tanstack/react-table";
 import { TextField } from "../../atoms/text-field";
 import { GRID_CLASS } from "./data-grid.constants";
 import type { DataGridColumnMeta } from "./data-grid.types";
-type DataGridFilterControlProps = {
-  header: Header<any, unknown>;
+type DataGridFilterControlProps<TData> = {
+  header: Header<TData, unknown>;
   textValue: string;
   onTextValueChange: (columnId: string, value: string) => void;
 };
-function DataGridFilterControlComponent({
+function DataGridFilterControlComponent<TData>({
   header,
   textValue,
   onTextValueChange,
-}: DataGridFilterControlProps) {
+}: DataGridFilterControlProps<TData>) {
   const meta = (header.column.columnDef.meta ?? {}) as DataGridColumnMeta;
   const filterType = meta.filterType;
   const column = header.column;
@@ -27,14 +27,12 @@ function DataGridFilterControlComponent({
         className={GRID_CLASS.filterControl}
         aria-label={`Filter ${column.id}`}
       >
-        {" "}
-        <option value="">همه</option>{" "}
+        <option value="">همه</option>
         {meta.filterOptions?.map((option) => (
           <option key={option.value} value={option.value}>
-            {" "}
-            {option.label}{" "}
+            {option.label}
           </option>
-        ))}{" "}
+        ))}
       </select>
     );
   }
@@ -46,9 +44,9 @@ function DataGridFilterControlComponent({
         className={GRID_CLASS.filterControl}
         aria-label={`Filter ${column.id}`}
       >
-        {" "}
-        <option value="">همه</option> <option value="true">فعال</option>{" "}
-        <option value="false">غیرفعال</option>{" "}
+        <option value="">همه</option>
+        <option value="true">فعال</option>
+        <option value="false">غیرفعال</option>
       </select>
     );
   }
@@ -75,4 +73,6 @@ function DataGridFilterControlComponent({
     />
   );
 }
-export const DataGridFilterControl = React.memo(DataGridFilterControlComponent);
+export const DataGridFilterControl = React.memo(
+  DataGridFilterControlComponent,
+) as typeof DataGridFilterControlComponent;

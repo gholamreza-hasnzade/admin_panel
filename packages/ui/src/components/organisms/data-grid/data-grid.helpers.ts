@@ -8,10 +8,6 @@ export function getByPath(obj: unknown, path: string) {
     return (acc as Record<string, unknown>)[key];
   }, obj);
 }
-function toStringSafe(value: unknown) {
-  if (value === null || value === undefined) return "";
-  return String(value);
-}
 export function areColumnFiltersEqual(
   a: ColumnFiltersState,
   b: ColumnFiltersState,
@@ -84,37 +80,17 @@ export function buildRequestParams({
   });
   return params;
 }
+/** Applies grid `meta` to column defs. Filtering is server-side (`manualFiltering`); no client `filterFn`. */
 export function buildEnhancedColumns<TData>(
   columns: DataGridColumnDef<TData>[],
 ): DataGridColumnDef<TData>[] {
   return columns.map((column) => {
     const meta = column.meta;
     const sortable = meta?.sortable ?? column.enableSorting ?? false;
-    const filterType = meta?.filterType;
-    const next: DataGridColumnDef<TData> = {
+    return {
       ...column,
       enableSorting: sortable,
     };
-    if (filterType === "date") {
-      next.filterFn = (row, columnId, value) => {
-        const rowValue = row.getValue(columnId);
-        if (!value) return true;
-        if (!rowValue) return false;
-        const normalized = String(rowValue).slice(0, 10);
-        return normalized === String(value);
-      };
-    } else if (filterType === "checkbox") {
-      next.filterFn = (row, columnId, value) => {
-        if (value === "" || value === undefined) return true;
-        return String(row.getValue(columnId)) === String(value);
-      };
-    } else if (filterType === "select") {
-      next.filterFn = (row, columnId, value) => {
-        if (!value) return true;
-        return toStringSafe(row.getValue(columnId)) === String(value);
-      };
-    }
-    return next;
   });
 }
 export async function fetchGridData<TData>(args: {

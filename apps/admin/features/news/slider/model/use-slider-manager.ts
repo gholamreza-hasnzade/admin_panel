@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast, toBackendDateTimeString } from "@repo/ui";
+import { toast, toBackendDateTimeString, DATA_GRID_ROOT_QUERY_KEY } from "@repo/ui";
 
 import { baseDataApiRoutes } from "@/lib/base-data-api";
 import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
@@ -23,7 +23,7 @@ export function useSliderManager() {
 
   const refreshGrid = React.useCallback(async () => {
     await queryClient.refetchQueries({
-      queryKey: ["data-grid", sliderConfig.api.grid],
+      queryKey: [DATA_GRID_ROOT_QUERY_KEY, sliderConfig.api.grid],
       exact: false,
       type: "active",
     });

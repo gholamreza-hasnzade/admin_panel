@@ -5,16 +5,18 @@ import {
   type ColumnFiltersState,
   type PaginationState,
   type SortingState,
+  type Updater,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { cn } from "../../../lib/utils";
 import { TableEmptyIcon } from "../../../icons";
 import { Button } from "../../atoms/button";
 import { TextField } from "../../atoms/text-field";
 import { Pagination } from "../../molecules/pagination";
-import { GRID_CLASS } from "./data-grid.constants";
+import { GRID_CLASS, getDataGridQueryKey } from "./data-grid.constants";
 import { DataGridHead } from "./data-grid-head";
 import {
   areColumnFiltersEqual,
@@ -125,19 +127,14 @@ function DataGrid<TData>({
         if (areColumnFiltersEqual(prev, next)) {
           return prev;
         }
-        if (pagination.pageIndex !== 0) {
-          setPagination((current) => ({ ...current, pageIndex: 0 }));
-        }
+        setPagination((current) =>
+          current.pageIndex === 0 ? current : { ...current, pageIndex: 0 },
+        );
         return next;
       });
     }, filterDebounceMs);
     return () => clearTimeout(timer);
-  }, [
-    textFilterInputs,
-    textFilterColumnIds,
-    filterDebounceMs,
-    pagination.pageIndex,
-  ]);
+  }, [textFilterInputs, textFilterColumnIds, filterDebounceMs]);
   const requestParams = React.useMemo(() => {
     return buildRequestParams({
       pageParamName,
@@ -176,7 +173,12 @@ function DataGrid<TData>({
     [requestParams],
   );
   const queryResult = useQuery({
-    queryKey: ["data-grid", url, requestParamsKey, dataPath, totalPath],
+    queryKey: getDataGridQueryKey({
+      url,
+      requestParamsKey,
+      dataPath,
+      totalPath,
+    }),
     placeholderData: keepPreviousData,
     queryFn: () =>
       fetchGridData<TData>({
@@ -201,18 +203,21 @@ function DataGrid<TData>({
   const error = queryResult.isError
     ? toGridErrorMessage(queryResult.error)
     : null;
+  const handleColumnFiltersChange = React.useCallback(
+    (updater: Updater<ColumnFiltersState>) => {
+      setColumnFilters((prev) =>
+        typeof updater === "function" ? updater(prev) : updater,
+      );
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    },
+    [],
+  );
   const table = useReactTable({
     data,
     columns: enhancedColumns,
     state: { sorting, columnFilters, pagination },
     onSortingChange: setSorting,
-    onColumnFiltersChange: (updater) => {
-      setColumnFilters((prev) => {
-        const next = typeof updater === "function" ? updater(prev) : updater;
-        return next;
-      });
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    },
+    onColumnFiltersChange: handleColumnFiltersChange,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     manualFiltering: true,
@@ -227,7 +232,6 @@ function DataGrid<TData>({
     null,
   );
   const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
-  const [scrollTop, setScrollTop] = React.useState(0);
   const headerGroups = table.getHeaderGroups();
   const leafColumns = table.getAllLeafColumns();
   const visibleRows = table.getRowModel().rows;
@@ -239,48 +243,21 @@ function DataGrid<TData>({
     rowActionsToggleLabel !== false &&
     (!(typeof rowActionsToggleLabel === "string") ||
       rowActionsToggleLabel.trim().length > 0);
-  const handleBodyScroll = React.useCallback(
-    (event: React.UIEvent<HTMLDivElement>) => {
-      setScrollTop(event.currentTarget.scrollTop);
-    },
-    [],
-  );
   const virtualizationRowHeight = Math.max(
     32,
     Math.round(rowVirtualizationEstimateHeight),
   );
   const virtualizationOverscan = Math.max(0, rowVirtualizationOverscan);
-  const viewportHeight =
-    scrollContainerRef.current?.clientHeight ??
-    pagination.pageSize * virtualizationRowHeight;
   const canVirtualizeRows =
     enableRowVirtualization && !loading && !error && visibleRows.length > 0;
-  const virtualStartIndex = canVirtualizeRows
-    ? Math.max(
-        0,
-        Math.floor(scrollTop / virtualizationRowHeight) -
-          virtualizationOverscan,
-      )
-    : 0;
-  const virtualEndIndex = canVirtualizeRows
-    ? Math.min(
-        visibleRows.length,
-        Math.ceil((scrollTop + viewportHeight) / virtualizationRowHeight) +
-          virtualizationOverscan,
-      )
-    : visibleRows.length;
-  const renderedRows = canVirtualizeRows
-    ? visibleRows.slice(virtualStartIndex, virtualEndIndex)
-    : visibleRows;
-  const topVirtualPadding = canVirtualizeRows
-    ? virtualStartIndex * virtualizationRowHeight
-    : 0;
-  const bottomVirtualPadding = canVirtualizeRows
-    ? Math.max(
-        0,
-        (visibleRows.length - virtualEndIndex) * virtualizationRowHeight,
-      )
-    : 0;
+  const rowVirtualizer = useVirtualizer({
+    count: visibleRows.length,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => virtualizationRowHeight,
+    overscan: virtualizationOverscan,
+    enabled: canVirtualizeRows,
+    getItemKey: (index) => visibleRows[index]?.id ?? index,
+  });
   React.useEffect(() => {
     if (!openActionRowId) return;
     const handlePointerDown = (event: MouseEvent) => {
@@ -305,12 +282,15 @@ function DataGrid<TData>({
       document.removeEventListener("keydown", handleEscape);
     };
   }, [openActionRowId]);
-  React.useEffect(() => {
-    setScrollTop(0);
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = 0;
-    }
-  }, [pagination.pageIndex, pagination.pageSize, requestParamsKey]);
+  React.useLayoutEffect(() => {
+    scrollContainerRef.current?.scrollTo({ top: 0 });
+    rowVirtualizer.scrollToOffset(0, { align: "start" });
+  }, [
+    pagination.pageIndex,
+    pagination.pageSize,
+    requestParamsKey,
+    rowVirtualizer,
+  ]);
   const handleTextFilterInputChange = React.useCallback(
     (columnId: string, value: string) => {
       setTextFilterInputs((prev) => ({ ...prev, [columnId]: value }));
@@ -322,88 +302,92 @@ function DataGrid<TData>({
     setTextFilterInputs({});
     setGlobalSearchInput("");
   }, [table]);
-  const tableBodyContent = React.useMemo(() => {
-    if (loading) {
-      return Array.from({ length: pagination.pageSize }).map((_, index) => (
+  let tableBodyContent: React.ReactNode;
+  if (loading) {
+    tableBodyContent = Array.from({ length: pagination.pageSize }).map(
+      (_, index) => (
         <tr key={`skeleton-${index}`} className="border-b border-border/60">
-          {" "}
           {leafColumns.map((column) => (
             <td key={`${column.id}-${index}`} className={GRID_CLASS.bodyCell}>
-              {" "}
-              <div className="h-4 w-full animate-pulse rounded bg-muted" />{" "}
+              <div className="h-4 w-full animate-pulse rounded bg-muted" />
             </td>
-          ))}{" "}
+          ))}
           {hasActions ? (
             <td className={GRID_CLASS.bodyCell}>
-              {" "}
-              <div className="h-8 w-24 animate-pulse rounded bg-muted" />{" "}
+              <div className="h-8 w-24 animate-pulse rounded bg-muted" />
             </td>
-          ) : null}{" "}
+          ) : null}
         </tr>
-      ));
-    }
-    if (error) {
-      return (
-        <tr>
-          {" "}
-          <td
-            colSpan={colSpan}
-            className="px-3 py-6 text-center text-destructive"
-          >
-            {" "}
-            {error}{" "}
-          </td>{" "}
-        </tr>
-      );
-    }
-    if (visibleRows.length === 0) {
-      return (
-        <tr>
-          {" "}
-          <td colSpan={colSpan} className="px-3 py-10 text-center">
-            {" "}
-            <div className="mx-auto flex max-w-sm flex-col items-center justify-center gap-2 text-muted-foreground">
-              {" "}
-              <div className="rounded-full border border-border/70 bg-muted/35 p-2.5">
-                {" "}
-                <TableEmptyIcon />{" "}
-              </div>{" "}
-              <p className="text-sm font-medium text-foreground">
-                {emptyMessage}
-              </p>{" "}
-              <p className="text-xs text-muted-foreground">
-                برای شروع می‌توانید یک آیتم جدید ایجاد کنید.
-              </p>{" "}
-            </div>{" "}
-          </td>{" "}
-        </tr>
-      );
-    }
-    return (
+      ),
+    );
+  } else if (error) {
+    tableBodyContent = (
+      <tr>
+        <td
+          colSpan={colSpan}
+          className="px-3 py-6 text-center text-destructive"
+        >
+          {error}
+        </td>
+      </tr>
+    );
+  } else if (visibleRows.length === 0) {
+    tableBodyContent = (
+      <tr>
+        <td colSpan={colSpan} className="px-3 py-10 text-center">
+          <div className="mx-auto flex max-w-sm flex-col items-center justify-center gap-2 text-muted-foreground">
+            <div className="rounded-full border border-border/70 bg-muted/35 p-2.5">
+              <TableEmptyIcon />
+            </div>
+            <p className="text-sm font-medium text-foreground">
+              {emptyMessage}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              برای شروع می‌توانید یک آیتم جدید ایجاد کنید.
+            </p>
+          </div>
+        </td>
+      </tr>
+    );
+  } else {
+    const virtualItems = canVirtualizeRows
+      ? rowVirtualizer.getVirtualItems()
+      : null;
+    const firstVirtual = virtualItems?.[0];
+    const lastVirtual =
+      virtualItems && virtualItems.length > 0
+        ? virtualItems[virtualItems.length - 1]
+        : undefined;
+    const paddingTop = firstVirtual ? firstVirtual.start : 0;
+    const paddingBottom =
+      lastVirtual !== undefined
+        ? Math.max(0, rowVirtualizer.getTotalSize() - lastVirtual.end)
+        : 0;
+    const rowsToRender =
+      virtualItems && virtualItems.length > 0
+        ? virtualItems.map((vi) => visibleRows[vi.index]!)
+        : visibleRows;
+    tableBodyContent = (
       <>
-        {" "}
-        {topVirtualPadding > 0 ? (
+        {paddingTop > 0 ? (
           <tr aria-hidden>
-            {" "}
             <td
               colSpan={colSpan}
-              height={topVirtualPadding}
+              height={paddingTop}
               className="border-0 p-0"
-            />{" "}
+            />
           </tr>
-        ) : null}{" "}
-        {renderedRows.map((row) => (
+        ) : null}
+        {rowsToRender.map((row) => (
           <tr
             key={row.id}
             className="border-b border-border/60 odd:bg-card even:bg-muted/20 hover:bg-accent/40"
           >
-            {" "}
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id} className={cn(GRID_CLASS.bodyCell, "truncate")}>
-                {" "}
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}{" "}
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
-            ))}{" "}
+            ))}
             {hasActions ? (
               <DataGridRowActionsCell
                 row={row}
@@ -417,48 +401,25 @@ function DataGrid<TData>({
                 actionRootRef={actionRootRef}
                 hasToggleLabel={hasToggleLabel}
               />
-            ) : null}{" "}
+            ) : null}
           </tr>
-        ))}{" "}
-        {bottomVirtualPadding > 0 ? (
+        ))}
+        {paddingBottom > 0 ? (
           <tr aria-hidden>
-            {" "}
             <td
               colSpan={colSpan}
-              height={bottomVirtualPadding}
+              height={paddingBottom}
               className="border-0 p-0"
-            />{" "}
+            />
           </tr>
-        ) : null}{" "}
+        ) : null}
       </>
     );
-  }, [
-    loading,
-    pagination.pageSize,
-    leafColumns,
-    hasActions,
-    error,
-    colSpan,
-    visibleRows.length,
-    emptyMessage,
-    topVirtualPadding,
-    renderedRows,
-    bottomVirtualPadding,
-    rowActionsMode,
-    effectiveRowActionsMode,
-    openActionRowId,
-    hasToggleLabel,
-    rowActionsToggleIcon,
-    rowActionsToggleLabel,
-    rowActionsPanelClassName,
-    rowActions,
-  ]);
+  }
   return (
     <div className={cn(GRID_CLASS.shell, className)}>
-      {" "}
       {showGlobalSearch ? (
         <div className={cn("max-w-md", isMobileMode && "max-w-full")}>
-          {" "}
           <TextField
             value={globalSearchInput}
             onChange={(event) => setGlobalSearchInput(event.target.value)}
@@ -466,23 +427,21 @@ function DataGrid<TData>({
             size="sm"
             containerClassName="h-9"
             inputClassName="bg-background"
-          />{" "}
+          />
         </div>
-      ) : null}{" "}
+      ) : null}
       {isMobileMode ? (
         <div className="flex items-center justify-end">
-          {" "}
           <Button
             type="button"
             size="sm"
             variant="outline"
             onClick={() => setShowMobileFilters((prev) => !prev)}
           >
-            {" "}
-            {showMobileFilters ? "بستن فیلترها" : "نمایش فیلترها"}{" "}
-          </Button>{" "}
+            {showMobileFilters ? "بستن فیلترها" : "نمایش فیلترها"}
+          </Button>
         </div>
-      ) : null}{" "}
+      ) : null}
       <div
         className={cn(
           GRID_CLASS.wrapper,
@@ -490,21 +449,17 @@ function DataGrid<TData>({
           tableWrapperClassName,
         )}
       >
-        {" "}
         <div
           ref={scrollContainerRef}
-          onScroll={handleBodyScroll}
           className="h-full overflow-x-auto overflow-y-auto"
         >
-          {" "}
           <table
             className={cn(
               GRID_CLASS.table,
               isMobileMode && "min-w-[680px] text-xs",
             )}
           >
-            {" "}
-            <DataGridHead
+            <DataGridHead<TData>
               headerGroups={headerGroups}
               hasActions={hasActions}
               actionsHeader={actionsHeader}
@@ -512,52 +467,44 @@ function DataGrid<TData>({
               onTextFilterInputChange={handleTextFilterInputChange}
               compact={isMobileMode}
               showFiltersRow={showFiltersRow}
-            />{" "}
-            <tbody>{tableBodyContent}</tbody>{" "}
-          </table>{" "}
-        </div>{" "}
-      </div>{" "}
+            />
+            <tbody>{tableBodyContent}</tbody>
+          </table>
+        </div>
+      </div>
       <div className="flex flex-col gap-3 border-t border-border/70 pt-3 md:flex-row md:items-center md:justify-between">
-        {" "}
         <div className="flex flex-wrap items-center gap-2">
-          {" "}
-          <span className="text-xs text-muted-foreground">
-            تعداد در صفحه:
-          </span>{" "}
+          <span className="text-xs text-muted-foreground">تعداد در صفحه:</span>
           <select
             aria-label="Rows per page"
             value={pagination.pageSize}
             onChange={(event) => table.setPageSize(Number(event.target.value))}
             className="h-9 rounded-md border border-input bg-background px-2 text-sm text-foreground"
           >
-            {" "}
             {pageSizeOptions.map((option) => (
               <option key={option} value={option}>
-                {" "}
-                {option}{" "}
+                {option}
               </option>
-            ))}{" "}
-          </select>{" "}
+            ))}
+          </select>
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={clearFilters}
           >
-            {" "}
-            پاک کردن فیلترها{" "}
-          </Button>{" "}
+            پاک کردن فیلترها
+          </Button>
           <span className="text-xs text-muted-foreground">
-            {" "}
-            {totalRows > 0 ? `${totalRows} رکورد` : ""}{" "}
-          </span>{" "}
-        </div>{" "}
+            {totalRows > 0 ? `${totalRows} رکورد` : ""}
+          </span>
+        </div>
         <Pagination
           page={currentPage}
           totalPages={Math.max(1, pageCount)}
           onPageChange={(nextPage) => table.setPageIndex(nextPage - 1)}
-        />{" "}
-      </div>{" "}
+        />
+      </div>
     </div>
   );
 }

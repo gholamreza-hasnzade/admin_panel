@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast, toBackendDateTimeString } from "@repo/ui";
+import { toast, toBackendDateTimeString, DATA_GRID_ROOT_QUERY_KEY } from "@repo/ui";
 
 import { baseDataApiRoutes } from "@/lib/base-data-api";
 import { fetchSelectOptions, normalizeOptions } from "@/lib/select-options";
@@ -25,7 +25,7 @@ export function useNotifManager() {
 
   const refreshGrid = React.useCallback(async () => {
     await queryClient.refetchQueries({
-      queryKey: ["data-grid", notifConfig.api.grid],
+      queryKey: [DATA_GRID_ROOT_QUERY_KEY, notifConfig.api.grid],
       exact: false,
       type: "active",
     });

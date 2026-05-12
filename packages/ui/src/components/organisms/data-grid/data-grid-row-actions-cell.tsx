@@ -31,13 +31,11 @@ function DataGridRowActionsCellComponent<TData>({
 }: DataGridRowActionsCellProps<TData>) {
   return (
     <td className={cn(GRID_CLASS.bodyCell, "text-left")}>
-      {" "}
       {rowActionsMode === "toggle" ? (
         <div
           className="relative inline-flex"
           ref={openActionRowId === row.id ? actionRootRef : null}
         >
-          {" "}
           <Button
             variant={hasToggleLabel ? "outline" : "ghost"}
             size={hasToggleLabel ? "sm" : "icon"}
@@ -52,9 +50,8 @@ function DataGridRowActionsCellComponent<TData>({
               setOpenActionRowId((prev) => (prev === row.id ? null : row.id))
             }
           >
-            {" "}
-            {hasToggleLabel ? rowActionsToggleLabel : null}{" "}
-          </Button>{" "}
+            {hasToggleLabel ? rowActionsToggleLabel : null}
+          </Button>
           {openActionRowId === row.id ? (
             <div
               className={cn(
@@ -62,9 +59,7 @@ function DataGridRowActionsCellComponent<TData>({
                 rowActionsPanelClassName,
               )}
             >
-              {" "}
               <div className="flex flex-col gap-1">
-                {" "}
                 {rowActions?.map((action, index) => {
                   if (action.visible && !action.visible(row.original))
                     return null;
@@ -85,18 +80,16 @@ function DataGridRowActionsCellComponent<TData>({
                       disabled={disabled}
                       className={cn("justify-start", action.className)}
                     >
-                      {" "}
-                      {action.label}{" "}
+                      {action.label}
                     </Button>
                   );
-                })}{" "}
-              </div>{" "}
+                })}
+              </div>
             </div>
-          ) : null}{" "}
+          ) : null}
         </div>
       ) : (
         <div className="flex flex-wrap items-center gap-1.5">
-          {" "}
           {rowActions?.map((action, index) => {
             if (action.visible && !action.visible(row.original)) return null;
             const disabled =
@@ -113,13 +106,12 @@ function DataGridRowActionsCellComponent<TData>({
                 disabled={disabled}
                 className={action.className}
               >
-                {" "}
-                {action.label}{" "}
+                {action.label}
               </Button>
             );
-          })}{" "}
+          })}
         </div>
-      )}{" "}
+      )}
     </td>
   );
 }
