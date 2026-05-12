@@ -572,12 +572,13 @@ export function DataTable<TData, TValue>({
   ), [variant, tableClassName]);
 
   // Get column widths for consistent alignment
+  const allColumns = table.getAllColumns();
   const columnWidths = useMemo(() => {
-    return table.getAllColumns().reduce((acc, column) => {
+    return allColumns.reduce((acc, column) => {
       acc[column.id] = column.getSize();
       return acc;
     }, {} as Record<string, number>);
-  }, [table.getAllColumns(), columnSizing]);
+  }, [allColumns]);
 
   // Loading state - only show full loading when no data and no API mode
   if ((loading || loadingProp) && data.length === 0 && !isApiMode) {

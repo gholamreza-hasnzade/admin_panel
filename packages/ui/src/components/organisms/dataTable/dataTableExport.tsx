@@ -34,7 +34,8 @@ export function DataTableExport<TData>({
       return table.getAllColumns()
         .filter(column => column.getIsVisible())
         .map(column => {
-          const value = column.accessorFn ? column.accessorFn(row, 0) : (row as any)[column.id];
+          const record = row as Record<string, unknown>;
+          const value = column.accessorFn ? column.accessorFn(row, 0) : record[column.id];
           // Escape CSV values
           if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
             return `"${value.replace(/"/g, '""')}"`;
@@ -81,29 +82,26 @@ export function DataTableExport<TData>({
     
     try {
       switch (format) {
-        case 'csv':
+        case 'csv': {
           const csvContent = convertToCSV(exportData);
           downloadFile(csvContent, 'csv');
           break;
-        
-        case 'json':
+        }
+        case 'json': {
           const jsonContent = convertToJSON(exportData);
           downloadFile(jsonContent, 'json');
           break;
-        
-        case 'excel':
-          // For Excel export, we'll use a simple CSV approach
-          // In a real implementation, you'd use a library like xlsx
+        }
+        case 'excel': {
           const excelContent = convertToCSV(exportData);
           downloadFile(excelContent, 'excel');
           break;
-        
-        case 'pdf':
-          // For PDF export, we'll use a simple text approach
-          // In a real implementation, you'd use a library like jsPDF
+        }
+        case 'pdf': {
           const pdfContent = convertToCSV(exportData);
           downloadFile(pdfContent, 'pdf');
           break;
+        }
       }
     } catch (error) {
       console.error('Export failed:', error);

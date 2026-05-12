@@ -21,8 +21,8 @@ export interface DataTableGroupingProps<TData> {
   data: TData[];
 }
 
-const calculateAggregation = (values: any[], type: AggregationType): number | string => {
-  const numericValues = values.filter(v => typeof v === 'number' && !isNaN(v));
+const calculateAggregation = (values: unknown[], type: AggregationType): number | string => {
+  const numericValues = values.filter((v): v is number => typeof v === "number" && !isNaN(v));
   
   switch (type) {
     case 'sum':
