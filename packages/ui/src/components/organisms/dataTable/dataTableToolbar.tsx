@@ -33,9 +33,15 @@ export function DataTableToolbar<TData>({
   className,
 }: DataTableToolbarProps<TData>) {
   const selectedCount = Object.keys(table.getState().rowSelection).length;
- /*  const filteredRowCount = table.getFilteredRowModel().rows.length;
-  const totalRowCount = table.getCoreRowModel().rows.length;
- */
+  const hasVisibleChrome =
+    (showSelectedCount && selectedCount > 0) ||
+    showExportButtons ||
+    showRefreshButton ||
+    showSettingsButton;
+  if (!hasVisibleChrome) {
+    return null;
+  }
+
   return (
     <div className={cn('flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-border gap-4', className)}>
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">

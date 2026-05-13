@@ -638,11 +638,28 @@ export function DataTable<TData, TValue>({
     );
   }
 
+  const hasFilterSection = Boolean(
+    filterConfigs && Object.keys(filterConfigs).length > 0,
+  );
+  const hasGroupingSection = Boolean(groupingConfig?.enabled);
+  const selectedKeysCount = Object.keys(rowSelection).length;
+  const hasBuiltInToolbarContent =
+    (showSelectedCount && selectedKeysCount > 0) ||
+    showExportButtons ||
+    showRefreshButton ||
+    showSettingsButton;
+  const hasToolbarRow =
+    typeof renderToolbar === "function" ||
+    hasBuiltInToolbarContent ||
+    hasFilterSection ||
+    hasGroupingSection;
+
   return (
     <DataTableTooltipShell active={autoTruncateTextCells}>
     <div className={cn("w-full", className)}>
-      {/* Toolbar */}
+      {hasToolbarRow ? (
       <div className="border-border flex flex-col items-start justify-between gap-4 border-b p-4 sm:flex-row sm:items-center">
+        {typeof renderToolbar === "function" || hasBuiltInToolbarContent ? (
         <div className={cn("transition-all duration-300 ease-in-out")}>
           {renderToolbar ? (
             renderToolbar(table)
@@ -658,6 +675,7 @@ export function DataTable<TData, TValue>({
             />
           )}
         </div>
+        ) : null}
         {/* Advanced Filters */}
         {filterConfigs && Object.keys(filterConfigs).length > 0 && (
           <div className={cn("transition-all duration-300 ease-in-out")}>
@@ -687,6 +705,7 @@ export function DataTable<TData, TValue>({
           </div>
         )}
       </div>
+      ) : null}
 
       {/* Density + export row */}
       {(showDensityControls || exportConfig?.enabled) && (
