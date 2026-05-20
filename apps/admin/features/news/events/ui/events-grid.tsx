@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 
 import { eventsConfig } from "../lib/config";
 import type { EventItem } from "../model/types";
+import { EditIcon, TrashIcon } from "lucide-react";
 
 const columns: ColumnDef<EventItem, unknown>[] = [
   { accessorKey: "id", header: "شناسه" },
@@ -19,8 +20,6 @@ const columns: ColumnDef<EventItem, unknown>[] = [
   { accessorKey: "presenter", header: "ارائه‌دهنده" },
 ];
 
-const TrashIcon = () => <span aria-hidden>🗑️</span>;
-const EditIcon = () => <span aria-hidden>✏️</span>;
 
 export function EventsGrid({ onEditRow, onDeleteRow }: { onEditRow: (row: EventItem) => void | Promise<void>; onDeleteRow: (row: EventItem) => void | Promise<void>; }) {
   return (

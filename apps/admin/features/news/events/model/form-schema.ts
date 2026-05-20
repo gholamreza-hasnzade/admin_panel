@@ -34,6 +34,6 @@ export const EMPTY_EVENTS_FORM: EventsFormValues = {
   startDate: "",
   endDate: "",
   status: "",
-  visible: "true",
+  visible: "",
   orderIndex: "0",
 };

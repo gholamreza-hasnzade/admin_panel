@@ -15,7 +15,7 @@ const overlayClassName =
   "fixed inset-0 z-50 bg-black/50 backdrop-blur-[1px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0";
 
 const contentClassName =
-  "fixed left-1/2 top-1/2 z-50 flex w-[calc(100vw-2rem)] max-w-lg min-h-0 max-h-[min(90dvh,calc(100dvh-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col gap-y-2 overflow-hidden rounded-lg border border-border bg-background p-0 shadow-lg outline-none sm:gap-y-3 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95";
+  "fixed left-1/2 top-1/2 z-50 flex w-[calc(100vw-2rem)] max-w-lg min-h-0 max-h-[min(90dvh,calc(100dvh-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col gap-y-2 border border-border bg-background p-0 shadow-lg outline-none sm:gap-y-3 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95";
 
 const modalScrollClassName =
   "min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 pt-2 pb-4 sm:px-6 sm:pb-5";
@@ -67,13 +67,15 @@ const ModalContent = React.forwardRef<
         className={cn(contentClassName, className)}
         {...props}
       >
-        {headerNode ? <div className="shrink-0">{headerNode}</div> : null}
-        {middleNodes.length > 0 ? (
-          <div className={modalScrollClassName}>{middleNodes}</div>
-        ) : null}
-        {footerNodes.length > 0 ? (
-          <div className={modalFooterShellClassName}>{footerNodes}</div>
-        ) : null}
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg">
+          {headerNode ? <div className="shrink-0">{headerNode}</div> : null}
+          {middleNodes.length > 0 ? (
+            <div className={modalScrollClassName}>{middleNodes}</div>
+          ) : null}
+          {footerNodes.length > 0 ? (
+            <div className={modalFooterShellClassName}>{footerNodes}</div>
+          ) : null}
+        </div>
       </DialogPrimitive.Content>
     </ModalPortal>
   );
