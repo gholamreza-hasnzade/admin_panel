@@ -9,3 +9,5 @@ export { FileDocumentIcon } from "./custom/file-document";
 export { SpinnerIcon } from "./custom/spinner";
 export { TableEmptyIcon } from "./custom/table-empty";
 export { UpDownIcon } from "./custom/up-down";
+export { TrashIcon } from "./custom/trash";
+export { EditIcon } from "./custom/edit";

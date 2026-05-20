@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { ReactNode } from "react";
-import { DataTable } from "@repo/ui";
+import { DataTable, EditIcon, TrashIcon } from "@repo/ui";
 
 import { api } from "@/lib/api";
 
@@ -15,22 +16,21 @@ function showText(value: string | number | null | undefined): ReactNode {
 }
 
 const sliderColumns: ColumnDef<SliderItem, unknown>[] = [
-  { accessorKey: "id", header: "شناسه" },
   {
     accessorKey: "imageUrl",
-    header: "تصویر",
+    header: "لینک تصویر",
     cell: ({ row }) => {
       const src = row.original.imageUrl;
       if (!src) return <span className="text-muted-foreground">بدون تصویر</span>;
       return (
         <a
-          href={src}
+          href={row.original.href || ""}
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary inline-block max-w-68 truncate hover:underline"
           title={src}
         >
-          {src}
+          <Image src={src} alt="slider" width={100} height={100} className="w-full h-auto" unoptimized />
         </a>
       );
     },
@@ -58,54 +58,7 @@ const sliderColumns: ColumnDef<SliderItem, unknown>[] = [
     cell: ({ row }) => showText(row.original.userTypeTitle),
   },
   { accessorKey: "orderIndex", header: "ترتیب" },
-  {
-    accessorKey: "href",
-    header: "لینک",
-    cell: ({ row }) => {
-      const href = row.original.href;
-      if (!href) return <span className="text-muted-foreground">-</span>;
-      return (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-          باز کردن لینک
-        </a>
-      );
-    },
-  },
 ];
-
-const TrashIcon = () => (
-  <svg
-    aria-hidden
-    viewBox="0 0 24 24"
-    className="size-3.5"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M3 6h18" />
-    <path d="M8 6V4h8v2" />
-    <path d="M19 6l-1 14H6L5 6" />
-    <path d="M10 11v6M14 11v6" />
-  </svg>
-);
-
-const EditIcon = () => (
-  <svg
-    aria-hidden
-    viewBox="0 0 24 24"
-    className="size-3.5"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12 20h9" />
-    <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4z" />
-  </svg>
-);
 
 type SliderGridProps = {
   onEditRow: (row: SliderItem) => void | Promise<void>;
