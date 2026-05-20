@@ -1,6 +1,6 @@
 "use client";
 
-import { Modal, ModalActions, ModalContent, ModalDescription, ModalHeader, ModalTitle } from "@repo/ui";
+import { DeleteConfirmDialog } from "../../shared/ui/delete-confirm-dialog";
 
 import type { NotifItem } from "../model/types";
 
@@ -19,28 +19,18 @@ export function NotifDeleteModal({
   isDeleting,
   onConfirm,
 }: NotifDeleteModalProps) {
-  return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent dir="rtl" className="max-w-md">
-        <ModalHeader>
-          <ModalTitle>حذف اعلان</ModalTitle>
-          <ModalDescription>
-            {deletingRow
-              ? `آیا از حذف اعلان با شناسه ${deletingRow.id} مطمئن هستید؟`
-              : "آیا از حذف این اعلان مطمئن هستید؟"}
-          </ModalDescription>
-        </ModalHeader>
+  const description = deletingRow
+    ? `آیا از حذف اعلان با شناسه ${deletingRow.id} مطمئن هستید؟`
+    : "آیا از حذف این اعلان مطمئن هستید؟";
 
-        <ModalActions
-          cancelText="انصراف"
-          confirmText="حذف"
-          confirmVariant="destructive"
-          loading={isDeleting}
-          disableConfirm={isDeleting}
-          onConfirm={onConfirm}
-          onCancel={() => onOpenChange(false)}
-        />
-      </ModalContent>
-    </Modal>
+  return (
+    <DeleteConfirmDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      isDeleting={isDeleting}
+      onConfirm={onConfirm}
+      title="حذف اعلان"
+      description={description}
+    />
   );
 }

@@ -102,6 +102,8 @@ type ConfirmDialogActionsProps = {
   loading?: boolean;
   disableConfirm?: boolean;
   disableCancel?: boolean;
+  onConfirm?: () => void;
+  onCancel?: () => void;
   className?: string;
 };
 
@@ -112,11 +114,15 @@ function ConfirmDialogActions({
   loading = false,
   disableConfirm = false,
   disableCancel = false,
+  onConfirm,
+  onCancel,
   className,
 }: ConfirmDialogActionsProps) {
   return (
     <ConfirmDialogFooter className={className}>
-      <ConfirmDialogCancel disabled={disableCancel}>{cancelText}</ConfirmDialogCancel>
+      <ConfirmDialogCancel disabled={disableCancel} onClick={onCancel}>
+        {cancelText}
+      </ConfirmDialogCancel>
       <ConfirmDialogAction
         className={cn(
           buttonVariants({
@@ -125,6 +131,7 @@ function ConfirmDialogActions({
           }),
         )}
         disabled={disableConfirm}
+        onClick={onConfirm}
       >
         {loading ? "در حال انجام..." : confirmText}
       </ConfirmDialogAction>
